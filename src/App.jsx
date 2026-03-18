@@ -1,5 +1,5 @@
 import { Link, Navigate, Route, Routes } from 'react-router-dom'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, useRef } from 'react'
 import { apiClient } from './lib/apiClient'
 import './App.css'
 
@@ -85,6 +85,8 @@ function FoldersPage() {
 
   const [activeDoc, setActiveDoc] = useState(null)
   const [memoText, setMemoText] = useState('')
+  const [activeRowIndex, setActiveRowIndex] = useState(0)
+  const rowRefs = useRef([])
 
   const refreshFolders = async () => {
     const fs = await apiClient.folders()
@@ -182,6 +184,14 @@ function FoldersPage() {
 
   const state = statusState(loading, error, filteredDocs.length)
 
+  useEffect(() => {
+    if (filteredDocs.length === 0) {
+      setActiveRowIndex(0)
+      return
+    }
+    setActiveRowIndex((idx) => Math.min(idx, filteredDocs.length - 1))
+  }, [filteredDocs.length])
+
   const setSortKey = (key) => {
     const defaultDir = key === 'uploadedAt' ? 'desc' : 'asc'
     const opposite = defaultDir === 'asc' ? 'desc' : 'asc'
@@ -199,6 +209,12 @@ function FoldersPage() {
   const showNotice = (msg) => {
     setNotice(msg)
     setTimeout(() => setNotice(''), 2200)
+  }
+
+  const moveFocusToRow = (nextIndex) => {
+    setActiveRowIndex(nextIndex)
+    const nextEl = rowRefs.current[nextIndex]
+    if (nextEl) nextEl.focus()
   }
 
   const onCreateFolder = async () => {
@@ -411,6 +427,7 @@ function FoldersPage() {
 
           <div className="actions" style={{ marginBottom: 8 }}>
             <button className="btn danger" type="button" disabled={checkedDocIds.length === 0} onClick={onBulkDelete}>선택 삭제 ({checkedDocIds.length})</button>
+            <span className="kbd-help">키보드: ↑/↓, Home/End, Enter(상세), Space(중요)</span>
           </div>
 
           <div className="table-wrap">
@@ -430,8 +447,46 @@ function FoldersPage() {
                 </tr>
               </thead>
               <tbody>
-                {filteredDocs.map((d) => (
-                  <tr key={d.id}>
+                {filteredDocs.map((d, idx) => (
+                  <tr
+                    key={d.id}
+                    ref={(el) => (rowRefs.current[idx] = el)}
+                    tabIndex={0}
+                    className={idx === activeRowIndex ? 'row-active' : ''}
+                    aria-selected={idx === activeRowIndex ? 'true' : 'false'}
+                    onFocus={() => setActiveRowIndex(idx)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'ArrowDown') {
+                        e.preventDefault()
+                        moveFocusToRow(Math.min(filteredDocs.length - 1, idx + 1))
+                        return
+                      }
+                      if (e.key === 'ArrowUp') {
+                        e.preventDefault()
+                        moveFocusToRow(Math.max(0, idx - 1))
+                        return
+                      }
+                      if (e.key === 'Home') {
+                        e.preventDefault()
+                        moveFocusToRow(0)
+                        return
+                      }
+                      if (e.key === 'End') {
+                        e.preventDefault()
+                        moveFocusToRow(filteredDocs.length - 1)
+                        return
+                      }
+                      if (e.key === 'Enter') {
+                        e.preventDefault()
+                        onOpenDetail(d)
+                        return
+                      }
+                      if (e.key === ' ' || e.code === 'Space') {
+                        e.preventDefault()
+                        onToggleImportant(d)
+                      }
+                    }}
+                  >
                     <td><input type="checkbox" checked={checkedDocIds.includes(d.id)} onChange={(e) => {
                       if (e.target.checked) setCheckedDocIds((v) => [...new Set([...v, d.id])])
                       else setCheckedDocIds((v) => v.filter((id) => id !== d.id))
