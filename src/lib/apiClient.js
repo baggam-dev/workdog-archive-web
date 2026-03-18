@@ -9,14 +9,13 @@ async function request(path, options = {}) {
   } catch {
     data = text
   }
-  if (!res.ok) {
-    throw new Error(data?.error || `요청 실패 (${res.status})`)
-  }
+  if (!res.ok) throw new Error(data?.error || `요청 실패 (${res.status})`)
   return data
 }
 
 export const apiClient = {
   baseUrl: API_BASE_URL,
-  health: () => request('/api/folders'),
   folders: () => request('/api/folders'),
+  folder: (id) => request(`/api/folders/${id}`),
+  folderDocuments: (id) => request(`/api/folders/${id}/documents`),
 }
