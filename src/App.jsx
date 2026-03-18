@@ -21,8 +21,8 @@ function Layout({ children }) {
         <div className="brand">WORKDOG ARCHIVE WEB</div>
         <nav className="nav">
           <Link to="/">홈</Link>
-          <Link to="/folders">폴더/문서 조회</Link>
-          <Link to="/docs">문서 목록(준비중)</Link>
+          <Link to="/folders">폴더/문서</Link>
+          <Link to="/docs">상태</Link>
         </nav>
       </header>
       <main className="content">{children}</main>
@@ -33,10 +33,10 @@ function Layout({ children }) {
 function HomePage() {
   return (
     <section>
-      <h1>Workdog React 전환 R2</h1>
-      <p className="muted">조회 기능(폴더/문서/필터/정렬/모바일 카드) 이관 단계입니다.</p>
+      <h1>Workdog React 전환 R3</h1>
+      <p className="muted">쓰기 기능(폴더/업로드/중요/메모/삭제) 이관 단계입니다.</p>
       <div className="actions">
-        <Link className="btn primary" to="/folders">폴더/문서 조회</Link>
+        <Link className="btn primary" to="/folders">폴더/문서 관리</Link>
       </div>
     </section>
   )
@@ -69,22 +69,53 @@ function statusState(loading, error, length) {
 function FoldersPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [notice, setNotice] = useState('')
+
   const [folders, setFolders] = useState([])
   const [selectedFolderId, setSelectedFolderId] = useState('')
   const [folderInfo, setFolderInfo] = useState(null)
   const [docs, setDocs] = useState([])
   const [filter, setFilter] = useState(defaultFilter)
   const [sort, setSort] = useState({ key: 'uploadedAt', dir: 'desc' })
+  const [checkedDocIds, setCheckedDocIds] = useState([])
+
+  const [createForm, setCreateForm] = useState({ name: '', description: '', color: '#f59e0b' })
+  const [editForm, setEditForm] = useState({ id: '', name: '', description: '', color: '#f59e0b' })
+  const [uploadForm, setUploadForm] = useState({ title: '', file: null })
+
+  const [activeDoc, setActiveDoc] = useState(null)
+  const [memoText, setMemoText] = useState('')
+
+  const refreshFolders = async () => {
+    const fs = await apiClient.folders()
+    setFolders(Array.isArray(fs) ? fs : [])
+    if (!selectedFolderId && fs?.length) setSelectedFolderId(fs[0].id)
+    if (selectedFolderId && !fs.some((f) => f.id === selectedFolderId)) {
+      setSelectedFolderId(fs[0]?.id || '')
+    }
+  }
+
+  const refreshDocs = async (folderId) => {
+    if (!folderId) {
+      setFolderInfo(null)
+      setDocs([])
+      return
+    }
+    const [folder, documents] = await Promise.all([
+      apiClient.folder(folderId),
+      apiClient.folderDocuments(folderId),
+    ])
+    setFolderInfo(folder)
+    setDocs(Array.isArray(documents) ? documents : [])
+    setCheckedDocIds([])
+  }
 
   useEffect(() => {
     let mounted = true
     ;(async () => {
       try {
         setLoading(true)
-        const fs = await apiClient.folders()
-        if (!mounted) return
-        setFolders(Array.isArray(fs) ? fs : [])
-        if (fs?.length) setSelectedFolderId(fs[0].id)
+        await refreshFolders()
       } catch (e) {
         if (!mounted) return
         setError(e.message || '폴더 로드 실패')
@@ -98,24 +129,17 @@ function FoldersPage() {
   }, [])
 
   useEffect(() => {
-    if (!selectedFolderId) {
-      setFolderInfo(null)
-      setDocs([])
-      return
-    }
-
     let mounted = true
     ;(async () => {
+      if (!selectedFolderId) {
+        setFolderInfo(null)
+        setDocs([])
+        return
+      }
       try {
         setLoading(true)
         setError('')
-        const [folder, documents] = await Promise.all([
-          apiClient.folder(selectedFolderId),
-          apiClient.folderDocuments(selectedFolderId),
-        ])
-        if (!mounted) return
-        setFolderInfo(folder)
-        setDocs(Array.isArray(documents) ? documents : [])
+        await refreshDocs(selectedFolderId)
       } catch (e) {
         if (!mounted) return
         setError(e.message || '문서 로드 실패')
@@ -172,15 +196,156 @@ function FoldersPage() {
     return sort.dir === 'asc' ? '▲' : '▼'
   }
 
+  const showNotice = (msg) => {
+    setNotice(msg)
+    setTimeout(() => setNotice(''), 2200)
+  }
+
+  const onCreateFolder = async () => {
+    if (!createForm.name.trim()) return showNotice('폴더명은 필수입니다.')
+    try {
+      await apiClient.createFolder(createForm)
+      await refreshFolders()
+      setCreateForm({ name: '', description: '', color: '#f59e0b' })
+      showNotice('폴더가 생성되었습니다.')
+    } catch (e) {
+      setError(e.message)
+    }
+  }
+
+  const onStartEditFolder = () => {
+    if (!folderInfo) return
+    setEditForm({
+      id: folderInfo.id,
+      name: folderInfo.name || '',
+      description: folderInfo.description || '',
+      color: folderInfo.color || '#f59e0b',
+    })
+  }
+
+  const onSaveEditFolder = async () => {
+    if (!editForm.id) return
+    try {
+      await apiClient.updateFolder(editForm.id, {
+        name: editForm.name,
+        description: editForm.description,
+        color: editForm.color,
+      })
+      await refreshFolders()
+      await refreshDocs(editForm.id)
+      showNotice('폴더가 수정되었습니다.')
+    } catch (e) {
+      setError(e.message)
+    }
+  }
+
+  const onDeleteFolder = async () => {
+    if (!folderInfo) return
+    if (!window.confirm('선택 폴더를 삭제하시겠습니까?')) return
+    try {
+      await apiClient.deleteFolder(folderInfo.id)
+      setActiveDoc(null)
+      setMemoText('')
+      await refreshFolders()
+      showNotice('폴더가 삭제되었습니다.')
+    } catch (e) {
+      setError(e.message)
+    }
+  }
+
+  const onUpload = async () => {
+    if (!selectedFolderId) return
+    if (!uploadForm.file) return showNotice('업로드 파일을 선택해 주세요.')
+    try {
+      await apiClient.uploadDocument(selectedFolderId, uploadForm.title, uploadForm.file)
+      setUploadForm({ title: '', file: null })
+      await refreshDocs(selectedFolderId)
+      showNotice('문서가 업로드되었습니다.')
+    } catch (e) {
+      setError(e.message)
+    }
+  }
+
+  const onToggleImportant = async (doc) => {
+    try {
+      await apiClient.patchDocument(doc.id, { isImportant: !doc.isImportant })
+      await refreshDocs(selectedFolderId)
+      if (activeDoc?.id === doc.id) {
+        const latest = (await apiClient.folderDocuments(selectedFolderId)).find((d) => d.id === doc.id)
+        setActiveDoc(latest || null)
+      }
+      showNotice('중요 표시를 변경했습니다.')
+    } catch (e) {
+      setError(e.message)
+    }
+  }
+
+  const onDeleteOne = async (docId) => {
+    if (!selectedFolderId) return
+    if (!window.confirm('문서를 삭제하시겠습니까?')) return
+    try {
+      await apiClient.deleteDocument(selectedFolderId, docId)
+      if (activeDoc?.id === docId) {
+        setActiveDoc(null)
+        setMemoText('')
+      }
+      await refreshDocs(selectedFolderId)
+      showNotice('문서를 삭제했습니다.')
+    } catch (e) {
+      setError(e.message)
+    }
+  }
+
+  const onBulkDelete = async () => {
+    if (!selectedFolderId || checkedDocIds.length === 0) return
+    if (!window.confirm(`선택한 ${checkedDocIds.length}건을 삭제하시겠습니까?`)) return
+    try {
+      await apiClient.bulkDelete(selectedFolderId, checkedDocIds)
+      await refreshDocs(selectedFolderId)
+      setCheckedDocIds([])
+      showNotice('선택 문서를 삭제했습니다.')
+    } catch (e) {
+      setError(e.message)
+    }
+  }
+
+  const onOpenDetail = (doc) => {
+    setActiveDoc(doc)
+    setMemoText(doc.memo || '')
+  }
+
+  const onSaveMemo = async () => {
+    if (!activeDoc) return
+    try {
+      await apiClient.patchDocument(activeDoc.id, { memo: memoText })
+      const updated = await apiClient.document(activeDoc.id)
+      setActiveDoc(updated)
+      await refreshDocs(selectedFolderId)
+      showNotice('메모를 저장했습니다.')
+    } catch (e) {
+      setError(e.message)
+    }
+  }
+
   return (
     <section>
-      <h1>폴더/문서 조회</h1>
+      <h1>폴더/문서 관리</h1>
       <p className="muted">API Base: {apiClient.baseUrl}</p>
+      {notice && <div className="state">{notice}</div>}
 
       <div className="grid2">
         <article className="panel">
-          <h2>폴더 목록</h2>
+          <h2>폴더</h2>
           <div className={`state ${loading ? 'loading' : error ? 'error' : ''}`}>{statusState(loading, error, folders.length).msg}</div>
+
+          <div className="form-card">
+            <b>폴더 생성</b>
+            <input placeholder="폴더명" value={createForm.name} onChange={(e) => setCreateForm((v) => ({ ...v, name: e.target.value }))} />
+            <input placeholder="설명" value={createForm.description} onChange={(e) => setCreateForm((v) => ({ ...v, description: e.target.value }))} />
+            <input type="color" value={createForm.color} onChange={(e) => setCreateForm((v) => ({ ...v, color: e.target.value }))} />
+            <button className="btn" type="button" onClick={onCreateFolder}>생성</button>
+          </div>
+
           <div className="folder-list">
             {folders.map((f) => (
               <button
@@ -194,10 +359,24 @@ function FoldersPage() {
               </button>
             ))}
           </div>
+
+          {folderInfo && (
+            <div className="form-card">
+              <b>선택 폴더 수정</b>
+              <div className="actions">
+                <button className="btn" type="button" onClick={onStartEditFolder}>불러오기</button>
+                <button className="btn" type="button" onClick={onSaveEditFolder}>저장</button>
+                <button className="btn danger" type="button" onClick={onDeleteFolder}>삭제</button>
+              </div>
+              <input placeholder="폴더명" value={editForm.name} onChange={(e) => setEditForm((v) => ({ ...v, name: e.target.value }))} />
+              <input placeholder="설명" value={editForm.description} onChange={(e) => setEditForm((v) => ({ ...v, description: e.target.value }))} />
+              <input type="color" value={editForm.color} onChange={(e) => setEditForm((v) => ({ ...v, color: e.target.value }))} />
+            </div>
+          )}
         </article>
 
         <article className="panel">
-          <h2>문서 목록</h2>
+          <h2>문서</h2>
           <div className={`state ${state.cls}`}>{state.msg}</div>
 
           {folderInfo && (
@@ -205,6 +384,13 @@ function FoldersPage() {
               선택 폴더: <b>{folderInfo.name}</b> · 생성일: {formatKST(folderInfo.createdAt)}
             </div>
           )}
+
+          <div className="form-card">
+            <b>문서 업로드</b>
+            <input placeholder="문서 제목(선택)" value={uploadForm.title} onChange={(e) => setUploadForm((v) => ({ ...v, title: e.target.value }))} />
+            <input type="file" accept=".hwp,.pdf,.xlsx,.xls,.txt" onChange={(e) => setUploadForm((v) => ({ ...v, file: e.target.files?.[0] || null }))} />
+            <button className="btn" type="button" onClick={onUpload}>업로드</button>
+          </div>
 
           <div className="filters">
             <input placeholder="문서명 검색" value={filter.title} onChange={(e) => setFilter((v) => ({ ...v, title: e.target.value }))} />
@@ -218,49 +404,71 @@ function FoldersPage() {
             </select>
             <input placeholder="태그 검색" value={filter.tag} onChange={(e) => setFilter((v) => ({ ...v, tag: e.target.value }))} />
             <label className="mini-check-wrap">
-              <input type="checkbox" checked={filter.onlyImportant} onChange={(e) => setFilter((v) => ({ ...v, onlyImportant: e.target.checked }))} /> 중요문서만
+              <input type="checkbox" checked={filter.onlyImportant} onChange={(e) => setFilter((v) => ({ ...v, onlyImportant: e.target.checked }))} /> 중요문서
             </label>
             <button className="btn" type="button" onClick={() => setFilter(defaultFilter)}>초기화</button>
+          </div>
+
+          <div className="actions" style={{ marginBottom: 8 }}>
+            <button className="btn danger" type="button" disabled={checkedDocIds.length === 0} onClick={onBulkDelete}>선택 삭제 ({checkedDocIds.length})</button>
           </div>
 
           <div className="table-wrap">
             <table>
               <thead>
                 <tr>
+                  <th><input type="checkbox" checked={filteredDocs.length > 0 && checkedDocIds.length === filteredDocs.length} onChange={(e) => {
+                    if (e.target.checked) setCheckedDocIds(filteredDocs.map((d) => d.id))
+                    else setCheckedDocIds([])
+                  }} /></th>
                   <th><button className="th-btn" onClick={() => setSortKey('important')}>중요 {sortMark('important')}</button></th>
                   <th><button className="th-btn" onClick={() => setSortKey('title')}>문서명 {sortMark('title')}</button></th>
                   <th><button className="th-btn" onClick={() => setSortKey('fileType')}>형식 {sortMark('fileType')}</button></th>
                   <th><button className="th-btn" onClick={() => setSortKey('category')}>카테고리 {sortMark('category')}</button></th>
                   <th><button className="th-btn" onClick={() => setSortKey('uploadedAt')}>수정일 {sortMark('uploadedAt')}</button></th>
+                  <th>액션</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredDocs.map((d) => (
                   <tr key={d.id}>
-                    <td>{d.isImportant ? '★' : '☆'}</td>
+                    <td><input type="checkbox" checked={checkedDocIds.includes(d.id)} onChange={(e) => {
+                      if (e.target.checked) setCheckedDocIds((v) => [...new Set([...v, d.id])])
+                      else setCheckedDocIds((v) => v.filter((id) => id !== d.id))
+                    }} /></td>
+                    <td>
+                      <button className={`star-btn ${d.isImportant ? 'on' : ''}`} onClick={() => onToggleImportant(d)}>{d.isImportant ? '★' : '☆'}</button>
+                    </td>
                     <td title={d.fileName}>{d.title}</td>
                     <td>{String(d.fileType || '').toUpperCase()}</td>
                     <td>{d.category || '기타'}</td>
                     <td>{formatKST(d.uploadedAt)}</td>
+                    <td>
+                      <div className="actions">
+                        <button className="btn" type="button" onClick={() => onOpenDetail(d)}>상세</button>
+                        <button className="btn danger" type="button" onClick={() => onDeleteOne(d.id)}>삭제</button>
+                      </div>
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
 
-          <div className="mobile-list">
-            {filteredDocs.map((d) => (
-              <article className="card" key={d.id}>
-                <div className="title-row">
-                  <h2>{d.title}</h2>
-                  <span>{d.isImportant ? '★' : '☆'}</span>
-                </div>
-                <div className="meta">{String(d.fileType || '').toUpperCase()} · {d.category || '기타'}</div>
-                <div className="meta">{formatKST(d.uploadedAt)}</div>
-                <div className="muted">{(d.summaryOneLine || '-').slice(0, 120)}</div>
-              </article>
-            ))}
-          </div>
+          {activeDoc && (
+            <div className="detail-box">
+              <div className="title-row">
+                <h2>문서 상세 · {activeDoc.title}</h2>
+                <button className="btn" type="button" onClick={() => setActiveDoc(null)}>닫기</button>
+              </div>
+              <div className="meta">형식: {activeDoc.fileType} · 수정일: {formatKST(activeDoc.uploadedAt)}</div>
+              <div className="meta">요약: {activeDoc.summaryOneLine || '-'}</div>
+              <textarea value={memoText} onChange={(e) => setMemoText(e.target.value)} placeholder="메모를 입력하세요" rows={4} />
+              <div className="actions">
+                <button className="btn" type="button" onClick={onSaveMemo}>메모 저장</button>
+              </div>
+            </div>
+          )}
         </article>
       </div>
     </section>
@@ -270,8 +478,8 @@ function FoldersPage() {
 function DocsPage() {
   return (
     <section>
-      <h1>문서 목록</h1>
-      <p className="muted">R3에서 쓰기 기능 이관 예정입니다.</p>
+      <h1>상태</h1>
+      <p className="muted">R3 완료: 쓰기 기능 이관 반영됨</p>
     </section>
   )
 }
