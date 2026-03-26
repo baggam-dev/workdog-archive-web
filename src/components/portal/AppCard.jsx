@@ -11,26 +11,20 @@ export default function AppCard({ app }) {
   if (!app) return <article className="app-card app-card-empty">빈 슬롯</article>
 
   const meta = STATUS_META[app.status] || STATUS_META.준비중
+  const cardClass = `app-card ${app.featured ? 'app-card-featured' : ''} ${meta.enabled ? 'app-card-link' : 'app-card-disabled'}`
 
-  if (!meta.enabled) {
-    return (
-      <article className="app-card app-card-disabled" aria-disabled="true">
-        <div className="app-card-top">
-          <strong className="app-title-wrap"><span className="app-icon" aria-hidden="true">{app.icon || '📦'}</span>{app.name}</strong>
-          <StatusBadge status={app.status} />
-        </div>
-        <p className="muted">{app.desc}</p>
-      </article>
-    )
-  }
-
-  return (
-    <Link className="app-card app-card-link" to={app.to || '/'}>
+  const inner = (
+    <>
       <div className="app-card-top">
-        <strong className="app-title-wrap"><span className="app-icon" aria-hidden="true">{app.icon || '📦'}</span>{app.name}</strong>
+        <div className={`app-icon-modern ${app.iconClass || ''}`}>{app.iconText || 'A'}</div>
         <StatusBadge status={app.status} />
       </div>
-      <p className="muted">{app.desc}</p>
-    </Link>
+      <strong className="app-card-title">{app.name}</strong>
+      <p className="muted app-card-desc">{app.desc}</p>
+    </>
   )
+
+  if (!meta.enabled) return <article className={cardClass} aria-disabled="true">{inner}</article>
+
+  return <Link className={cardClass} to={app.to || '/'}>{inner}</Link>
 }
