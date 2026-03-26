@@ -9,7 +9,6 @@ const apps = [
     desc: '문서 보관/검색/요약 업무 앱',
     status: '운영중',
     to: '/archive',
-    featured: true,
   },
   {
     key: 'students',
