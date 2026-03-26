@@ -1,21 +1,12 @@
-# UI Refactor Taskboard (SaaS UX Focus)
+# UI Refactor Taskboard
 
-## Sprint A - 구조/흐름
-- [x] A1 포탈 런처 단순화 (카드 클릭 즉시 진입)
-- [x] A2 AppCard 정보 최소화 (앱명/상태/설명)
-- [x] A3 Archive 문서 화면 Primary 1개 정리
-- [x] A4 Row 액션 메뉴화(⋯)
+현재 상태: 일시 중지 (Paused)
 
-## Sprint B - 화면 분리
-- [x] B1 UploadModal 도입
-- [x] B2 폴더 화면 완전 분리
-- [x] B3 문서 화면 집중형 레이아웃 정리
+사유:
+- 사용자 요청으로 태스크 초기화
+- Figma 기반 디자인 가이드 수신 후 재계획 예정
 
-## Sprint C - 디자인 일관성
-- [x] C1 색상 최소화(Neutral/Brand/Danger)
-- [x] C2 타이포/간격 토큰 QA
-- [x] C3 상태 배지 단순화(운영중/준비중/점검중)
-
-## Release
-- [x] R1 스모크 테스트
-- [x] R2 릴리즈 태그 생성
+다음 액션:
+1) 사용자 Figma 링크/정리안 공유
+2) 화면별 구현 Task 재작성
+3) 우선순위 기반 순차 적용
