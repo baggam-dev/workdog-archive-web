@@ -13,7 +13,7 @@
 
 ## Sprint C - 디자인 일관성
 - [x] C1 색상 최소화(Neutral/Brand/Danger)
-- [ ] C2 타이포/간격 토큰 QA
+- [x] C2 타이포/간격 토큰 QA
 - [ ] C3 상태 배지 단순화(운영중/준비중/점검중)
 
 ## Release
