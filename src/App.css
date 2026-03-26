@@ -10,6 +10,9 @@
 h1 { margin:0 0 8px; font-size:24px; }
 h2 { margin:0; font-size:17px; }
 .muted { color:#64748b; margin:0 0 8px; }
+
+.page-header { display:grid; gap:8px; margin-bottom:12px; }
+.page-header-actions { display:flex; justify-content:flex-end; gap:8px; flex-wrap:wrap; }
 .actions { display:flex; gap:8px; flex-wrap:wrap; }
 .btn { height:34px; padding:0 12px; border-radius:6px; border:1px solid #c7d2df; display:inline-flex; align-items:center; text-decoration:none; color:#1f2937; background:#fff; cursor:pointer; }
 .btn.primary { background:#1f4e79; color:#fff; border-color:#1f4e79; }

@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import PageHeader from '../components/common/PageHeader'
 
 const apps = [
   { key: 'archive', name: 'Workdog-Archive', desc: '문서 보관/검색/요약 업무 앱', status: '운영중', to: '/archive' },
@@ -9,8 +10,7 @@ const apps = [
 export default function PortalHomePage() {
   return (
     <section>
-      <h1>Workdog 포탈</h1>
-      <p className="muted">업무 앱 실행 허브 · 3x3 카드 레이아웃(1차)</p>
+      <PageHeader title="Workdog 포탈" description="업무 앱 실행 허브 · 3x3 카드 레이아웃(1차)" />
 
       <div className="app-grid">
         {Array.from({ length: 9 }).map((_, idx) => {

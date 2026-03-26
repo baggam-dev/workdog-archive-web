@@ -3,6 +3,7 @@ import { apiClient } from '../lib/apiClient'
 import useDocumentViewModel from '../hooks/useDocumentViewModel'
 import FolderSidebar from '../components/folders/FolderSidebar'
 import DocumentsPanel from '../components/folders/DocumentsPanel'
+import PageHeader from '../components/common/PageHeader'
 
 const defaultFilter = {
   title: '',
@@ -313,8 +314,7 @@ export default function FoldersPage() {
 
   return (
     <section>
-      <h1>폴더/문서 관리</h1>
-      <p className="muted">API Base: {apiClient.baseUrl}</p>
+      <PageHeader title="폴더/문서 관리" description={`API Base: ${apiClient.baseUrl}`} />
       {notice.message && <div className={`toast ${notice.type}`}>{notice.message}</div>}
 
       <div className="grid2">
