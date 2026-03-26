@@ -4,6 +4,7 @@ import AppCard from '../components/portal/AppCard'
 const apps = [
   {
     key: 'archive',
+    icon: '🐶',
     name: 'Workdog-Archive',
     desc: '문서 보관/검색/요약 업무 앱',
     status: '운영중',
@@ -11,6 +12,7 @@ const apps = [
   },
   {
     key: 'students',
+    icon: '🎓',
     name: '학생관리',
     desc: '학생 정보 및 상담 관리',
     status: '준비중',
@@ -18,6 +20,7 @@ const apps = [
   },
   {
     key: 'app3',
+    icon: '🧩',
     name: '추후 추가 앱',
     desc: '업무 자동화 앱 슬롯',
     status: '점검중',

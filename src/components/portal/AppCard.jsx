@@ -27,7 +27,7 @@ export default function AppCard({ app }) {
   return (
     <Link className="app-card app-card-link" to={app.to || '/'}>
       <div className="app-card-top">
-        <strong>{app.name}</strong>
+        <strong className="app-title-wrap"><span className="app-icon" aria-hidden="true">{app.icon || '📦'}</span>{app.name}</strong>
         <StatusBadge status={app.status} />
       </div>
       <p className="muted">{app.desc}</p>

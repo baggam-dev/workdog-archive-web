@@ -104,6 +104,8 @@ tr:focus { outline:2px solid var(--brand-500); outline-offset:-2px; background:v
 .app-grid { display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:var(--space-3); }
 .app-card { border:1px solid var(--line-default); border-radius:var(--radius-lg); background:var(--bg-surface); padding:var(--space-3); display:grid; gap:var(--space-2); min-height:130px; }
 .app-card-top { display:flex; align-items:center; justify-content:space-between; gap:var(--space-2); }
+.app-title-wrap { display:inline-flex; align-items:center; gap:8px; font-weight:600; }
+.app-icon { width:22px; height:22px; display:inline-flex; align-items:center; justify-content:center; border-radius:6px; background:var(--bg-subtle); font-size:14px; }
 .app-card-link { text-decoration:none; color:inherit; transition:all .15s ease; }
 .app-card-link:hover { border-color:var(--brand-500); background:var(--brand-100); }
 .app-card-disabled { opacity:.75; }
