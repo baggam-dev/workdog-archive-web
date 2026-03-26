@@ -1,5 +1,6 @@
 import FilterBar from '../common/FilterBar'
 import DataTable from '../common/DataTable'
+import InlineState from '../common/InlineState'
 
 export default function DocumentsPanel({
   state,
@@ -36,7 +37,7 @@ export default function DocumentsPanel({
   return (
     <article className="panel">
       <h2>문서</h2>
-      <div className={`state ${state.cls}`}>{state.msg}</div>
+      <InlineState cls={state.cls} message={state.msg} />
 
       {folderInfo && <div className="meta-line">선택 폴더: <b>{folderInfo.name}</b> · 생성일: {formatKST(folderInfo.createdAt)}</div>}
 

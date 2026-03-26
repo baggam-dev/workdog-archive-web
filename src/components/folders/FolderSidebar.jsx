@@ -1,3 +1,5 @@
+import InlineState from '../common/InlineState'
+
 export default function FolderSidebar({
   loading,
   error,
@@ -18,7 +20,7 @@ export default function FolderSidebar({
   return (
     <article className="panel">
       <h2>폴더</h2>
-      <div className={`state ${loading ? 'loading' : error ? 'error' : ''}`}>{statusMessage}</div>
+      <InlineState cls={loading ? 'loading' : error ? 'error' : ''} message={statusMessage} />
 
       <div className="form-card">
         <b>폴더 생성</b>

@@ -4,6 +4,7 @@ import useDocumentViewModel from '../hooks/useDocumentViewModel'
 import FolderSidebar from '../components/folders/FolderSidebar'
 import DocumentsPanel from '../components/folders/DocumentsPanel'
 import PageHeader from '../components/common/PageHeader'
+import Toast from '../components/common/Toast'
 
 const defaultFilter = {
   title: '',
@@ -315,7 +316,7 @@ export default function FoldersPage() {
   return (
     <section>
       <PageHeader title="폴더/문서 관리" description={`API Base: ${apiClient.baseUrl}`} />
-      {notice.message && <div className={`toast ${notice.type}`}>{notice.message}</div>}
+      <Toast type={notice.type} message={notice.message} />
 
       <div className="grid2">
         <FolderSidebar
