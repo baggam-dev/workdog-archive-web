@@ -1,9 +1,10 @@
 import { Link } from 'react-router-dom'
+import StatusBadge from '../common/StatusBadge'
 
 const STATUS_META = {
-  운영중: { cls: 'on', enabled: true },
-  점검중: { cls: 'warn', enabled: false },
-  준비중: { cls: 'off', enabled: false },
+  운영중: { enabled: true },
+  점검중: { enabled: false },
+  준비중: { enabled: false },
 }
 
 export default function AppCard({ app }) {
@@ -16,7 +17,7 @@ export default function AppCard({ app }) {
       <article className="app-card app-card-disabled" aria-disabled="true">
         <div className="app-card-top">
           <strong>{app.name}</strong>
-          <span className={`status-dot ${meta.cls}`}>{app.status}</span>
+          <StatusBadge status={app.status} />
         </div>
         <p className="muted">{app.desc}</p>
       </article>
@@ -27,7 +28,7 @@ export default function AppCard({ app }) {
     <Link className="app-card app-card-link" to={app.to || '/'}>
       <div className="app-card-top">
         <strong>{app.name}</strong>
-        <span className={`status-dot ${meta.cls}`}>{app.status}</span>
+        <StatusBadge status={app.status} />
       </div>
       <p className="muted">{app.desc}</p>
     </Link>
