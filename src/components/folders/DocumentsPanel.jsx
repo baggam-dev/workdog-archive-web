@@ -1,4 +1,5 @@
 import FilterBar from '../common/FilterBar'
+import DataTable from '../common/DataTable'
 
 export default function DocumentsPanel({
   state,
@@ -59,81 +60,61 @@ export default function DocumentsPanel({
         <span className="kbd-help">키보드: ↑/↓, Home/End, Enter(상세), Space(중요)</span>
       </div>
 
-      <div className="table-wrap desktop-only">
-        <table className="doc-table">
-          <colgroup>
-            <col className="col-check" />
-            <col className="col-important" />
-            <col className="col-title" />
-            <col className="col-type" />
-            <col className="col-category" />
-            <col className="col-date" />
-            <col className="col-action" />
-          </colgroup>
-          <thead>
-            <tr>
-              <th><input type="checkbox" checked={filteredDocs.length > 0 && checkedDocIds.length === filteredDocs.length} onChange={(e) => {
-                if (e.target.checked) setCheckedDocIds(filteredDocs.map((d) => d.id))
-                else setCheckedDocIds([])
-              }} /></th>
-              <th><button className="th-btn" onClick={() => setSortKey('important')}>중요 {sortMark('important')}</button></th>
-              <th><button className="th-btn" onClick={() => setSortKey('title')}>문서명 {sortMark('title')}</button></th>
-              <th><button className="th-btn" onClick={() => setSortKey('fileType')}>형식 {sortMark('fileType')}</button></th>
-              <th><button className="th-btn" onClick={() => setSortKey('category')}>카테고리 {sortMark('category')}</button></th>
-              <th><button className="th-btn" onClick={() => setSortKey('uploadedAt')}>수정일 {sortMark('uploadedAt')}</button></th>
-              <th>액션</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredDocs.map((d, idx) => (
-              <tr
-                key={d.id}
-                ref={(el) => (rowRefs.current[idx] = el)}
-                tabIndex={0}
-                className={idx === activeRowIndex ? 'row-active' : ''}
-                aria-selected={idx === activeRowIndex ? 'true' : 'false'}
-                onFocus={() => setActiveRowIndex(idx)}
-                onKeyDown={(e) => {
-                  if (e.key === 'ArrowDown') {
-                    e.preventDefault(); moveFocusToRow(Math.min(filteredDocs.length - 1, idx + 1)); return
-                  }
-                  if (e.key === 'ArrowUp') {
-                    e.preventDefault(); moveFocusToRow(Math.max(0, idx - 1)); return
-                  }
-                  if (e.key === 'Home') {
-                    e.preventDefault(); moveFocusToRow(0); return
-                  }
-                  if (e.key === 'End') {
-                    e.preventDefault(); moveFocusToRow(filteredDocs.length - 1); return
-                  }
-                  if (e.key === 'Enter') {
-                    e.preventDefault(); onOpenDetail(d); return
-                  }
-                  if (e.key === ' ' || e.code === 'Space') {
-                    e.preventDefault(); onToggleImportant(d)
-                  }
-                }}
-              >
-                <td><input type="checkbox" checked={checkedDocIds.includes(d.id)} onChange={(e) => {
-                  if (e.target.checked) setCheckedDocIds((v) => [...new Set([...v, d.id])])
-                  else setCheckedDocIds((v) => v.filter((id) => id !== d.id))
-                }} /></td>
-                <td><button className={`star-btn ${d.isImportant ? 'on' : ''}`} onClick={() => onToggleImportant(d)}>{d.isImportant ? '★' : '☆'}</button></td>
-                <td className="ellipsis" title={d.fileName || d.title}>{d.title}</td>
-                <td className="ellipsis" title={String(d.fileType || '').toUpperCase()}>{String(d.fileType || '').toUpperCase()}</td>
-                <td className="ellipsis" title={d.category || '기타'}>{d.category || '기타'}</td>
-                <td title={formatKST(d.uploadedAt)}>{formatKSTDateOnly(d.uploadedAt)}</td>
-                <td>
-                  <div className="actions table-actions">
-                    <button className="btn" type="button" onClick={() => onOpenDetail(d)}>상세</button>
-                    <button className="btn danger" type="button" onClick={() => onDeleteOne(d.id)}>삭제</button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <DataTable
+        checkedAll={filteredDocs.length > 0 && checkedDocIds.length === filteredDocs.length}
+        onToggleAll={(e) => {
+          if (e.target.checked) setCheckedDocIds(filteredDocs.map((d) => d.id))
+          else setCheckedDocIds([])
+        }}
+        sortMark={sortMark}
+        setSortKey={setSortKey}
+        rows={filteredDocs.map((d, idx) => (
+          <tr
+            key={d.id}
+            ref={(el) => (rowRefs.current[idx] = el)}
+            tabIndex={0}
+            className={idx === activeRowIndex ? 'row-active' : ''}
+            aria-selected={idx === activeRowIndex ? 'true' : 'false'}
+            onFocus={() => setActiveRowIndex(idx)}
+            onKeyDown={(e) => {
+              if (e.key === 'ArrowDown') {
+                e.preventDefault(); moveFocusToRow(Math.min(filteredDocs.length - 1, idx + 1)); return
+              }
+              if (e.key === 'ArrowUp') {
+                e.preventDefault(); moveFocusToRow(Math.max(0, idx - 1)); return
+              }
+              if (e.key === 'Home') {
+                e.preventDefault(); moveFocusToRow(0); return
+              }
+              if (e.key === 'End') {
+                e.preventDefault(); moveFocusToRow(filteredDocs.length - 1); return
+              }
+              if (e.key === 'Enter') {
+                e.preventDefault(); onOpenDetail(d); return
+              }
+              if (e.key === ' ' || e.code === 'Space') {
+                e.preventDefault(); onToggleImportant(d)
+              }
+            }}
+          >
+            <td><input type="checkbox" checked={checkedDocIds.includes(d.id)} onChange={(e) => {
+              if (e.target.checked) setCheckedDocIds((v) => [...new Set([...v, d.id])])
+              else setCheckedDocIds((v) => v.filter((id) => id !== d.id))
+            }} /></td>
+            <td><button className={`star-btn ${d.isImportant ? 'on' : ''}`} onClick={() => onToggleImportant(d)}>{d.isImportant ? '★' : '☆'}</button></td>
+            <td className="ellipsis" title={d.fileName || d.title}>{d.title}</td>
+            <td className="ellipsis" title={String(d.fileType || '').toUpperCase()}>{String(d.fileType || '').toUpperCase()}</td>
+            <td className="ellipsis" title={d.category || '기타'}>{d.category || '기타'}</td>
+            <td title={formatKST(d.uploadedAt)}>{formatKSTDateOnly(d.uploadedAt)}</td>
+            <td>
+              <div className="actions table-actions">
+                <button className="btn" type="button" onClick={() => onOpenDetail(d)}>상세</button>
+                <button className="btn danger" type="button" onClick={() => onDeleteOne(d.id)}>삭제</button>
+              </div>
+            </td>
+          </tr>
+        ))}
+      />
 
       <div className="mobile-only card-list">
         {filteredDocs.map((d) => (
