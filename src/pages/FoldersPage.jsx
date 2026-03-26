@@ -5,6 +5,7 @@ import FolderSidebar from '../components/folders/FolderSidebar'
 import DocumentsPanel from '../components/folders/DocumentsPanel'
 import PageHeader from '../components/common/PageHeader'
 import Toast from '../components/common/Toast'
+import UploadModal from '../components/common/UploadModal'
 
 const defaultFilter = {
   title: '',
@@ -320,7 +321,7 @@ export default function FoldersPage() {
       <PageHeader
         title="폴더/문서 관리"
         description="문서 목록 중심 작업 화면"
-        actions={<button className="btn primary" type="button" onClick={() => setUploadPanelOpen((v) => !v)}>+ 업로드</button>}
+        actions={<button className="btn primary" type="button" disabled={!selectedFolderId} onClick={() => setUploadPanelOpen((v) => !v)}>+ 업로드</button>}
       />
       <Toast type={notice.type} message={notice.message} />
 
@@ -348,11 +349,6 @@ export default function FoldersPage() {
           folderInfo={folderInfo}
           formatKST={formatKST}
           formatKSTDateOnly={formatKSTDateOnly}
-          uploadForm={uploadForm}
-          setUploadForm={setUploadForm}
-          onUpload={onUpload}
-          uploadPanelOpen={uploadPanelOpen}
-          setUploadPanelOpen={setUploadPanelOpen}
           filter={filter}
           setFilter={setFilter}
           categories={categories}
@@ -378,6 +374,15 @@ export default function FoldersPage() {
           onSaveMemo={onSaveMemo}
         />
       </div>
+
+      <UploadModal
+        open={uploadPanelOpen}
+        onClose={() => setUploadPanelOpen(false)}
+        uploadForm={uploadForm}
+        setUploadForm={setUploadForm}
+        onUpload={onUpload}
+        folderName={folderInfo?.name}
+      />
     </section>
   )
 }

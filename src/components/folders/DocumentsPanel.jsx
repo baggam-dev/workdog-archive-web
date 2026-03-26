@@ -10,11 +10,6 @@ export default function DocumentsPanel({
   folderInfo,
   formatKST,
   formatKSTDateOnly,
-  uploadForm,
-  setUploadForm,
-  onUpload,
-  uploadPanelOpen,
-  setUploadPanelOpen,
   filter,
   setFilter,
   categories,
@@ -45,18 +40,6 @@ export default function DocumentsPanel({
       <InlineState cls={state.cls} message={state.msg} />
 
       {folderInfo && <div className="meta-line">선택 폴더: <b>{folderInfo.name}</b> · 생성일: {formatKST(folderInfo.createdAt)}</div>}
-
-      {uploadPanelOpen && (
-        <div className="form-card">
-          <div className="title-row">
-            <b>문서 업로드</b>
-            <button className="btn" type="button" onClick={() => setUploadPanelOpen(false)}>닫기</button>
-          </div>
-          <input placeholder="문서 제목(선택)" value={uploadForm.title} onChange={(e) => setUploadForm((v) => ({ ...v, title: e.target.value }))} />
-          <input type="file" accept=".hwp,.pdf,.xlsx,.xls,.txt" onChange={(e) => setUploadForm((v) => ({ ...v, file: e.target.files?.[0] || null }))} />
-          <button className="btn primary" type="button" onClick={onUpload}>업로드 실행</button>
-        </div>
-      )}
 
       <FilterBar
         filter={filter}

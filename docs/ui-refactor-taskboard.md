@@ -7,7 +7,7 @@
 - [x] A4 Row 액션 메뉴화(⋯)
 
 ## Sprint B - 화면 분리
-- [ ] B1 UploadModal 도입
+- [x] B1 UploadModal 도입
 - [ ] B2 폴더 화면 완전 분리
 - [ ] B3 문서 화면 집중형 레이아웃 정리
 
