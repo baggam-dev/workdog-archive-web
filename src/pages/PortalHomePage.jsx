@@ -9,6 +9,7 @@ const apps = [
     status: '운영중',
     to: '/archive',
     updatedAt: '2026-03-26',
+    domain: '문서 업무 자동화',
     secondaryLabel: '앱 소개',
   },
   {
@@ -18,15 +19,17 @@ const apps = [
     status: '준비중',
     to: '/students',
     updatedAt: '-',
+    domain: '학사/상담',
     secondaryLabel: '준비중',
   },
   {
     key: 'app3',
     name: '추후 추가 앱',
     desc: '업무 자동화 앱 슬롯',
-    status: '준비중',
+    status: '점검중',
     to: '/apps',
     updatedAt: '-',
+    domain: '공통 업무',
     secondaryLabel: '준비중',
   },
 ]
