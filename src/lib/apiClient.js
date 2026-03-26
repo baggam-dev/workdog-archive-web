@@ -1,16 +1,45 @@
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://168.107.14.124:3030'
 
-async function request(path, options = {}) {
-  const res = await fetch(`${API_BASE_URL}${path}`, options)
-  const text = await res.text()
-  let data
-  try {
-    data = JSON.parse(text)
-  } catch {
-    data = text
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+
+async function request(path, options = {}, retryCount = 1) {
+  const url = `${API_BASE_URL}${path}`
+
+  for (let attempt = 0; attempt <= retryCount; attempt += 1) {
+    try {
+      const res = await fetch(url, options)
+      const text = await res.text()
+      let data
+      try {
+        data = JSON.parse(text)
+      } catch {
+        data = text
+      }
+
+      if (!res.ok) {
+        const serverError = new Error(data?.error || `요청 실패 (${res.status})`)
+        serverError.status = res.status
+
+        // 5xx 는 1회 재시도
+        if (res.status >= 500 && attempt < retryCount) {
+          await sleep(250)
+          continue
+        }
+        throw serverError
+      }
+
+      return data
+    } catch (error) {
+      // 네트워크 오류(예: Failed to fetch) 1회 재시도
+      if (attempt < retryCount) {
+        await sleep(250)
+        continue
+      }
+      throw error
+    }
   }
-  if (!res.ok) throw new Error(data?.error || `요청 실패 (${res.status})`)
-  return data
+
+  throw new Error('요청 실패')
 }
 
 export const apiClient = {

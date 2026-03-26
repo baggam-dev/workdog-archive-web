@@ -55,7 +55,7 @@ function statusState(loading, error, length) {
 export default function FoldersPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [notice, setNotice] = useState('')
+  const [notice, setNotice] = useState({ type: '', message: '' })
 
   const [folders, setFolders] = useState([])
   const [selectedFolderId, setSelectedFolderId] = useState('')
@@ -101,7 +101,9 @@ export default function FoldersPage() {
         await refreshFolders()
       } catch (e) {
         if (!mounted) return
-        setError(e.message || '폴더 로드 실패')
+        const msg = normalizeError(e, '폴더 로드 실패')
+        setError(msg)
+        showNotice(msg, 'error')
       } finally {
         if (mounted) setLoading(false)
       }
@@ -125,7 +127,9 @@ export default function FoldersPage() {
         await refreshDocs(selectedFolderId)
       } catch (e) {
         if (!mounted) return
-        setError(e.message || '문서 로드 실패')
+        const msg = normalizeError(e, '문서 로드 실패')
+        setError(msg)
+        showNotice(msg, 'error')
       } finally {
         if (mounted) setLoading(false)
       }
@@ -156,9 +160,16 @@ export default function FoldersPage() {
     return sort.dir === 'asc' ? '▲' : '▼'
   }
 
-  const showNotice = (msg) => {
-    setNotice(msg)
-    setTimeout(() => setNotice(''), 2200)
+  const normalizeError = (e, fallback = '요청 처리 중 오류가 발생했습니다.') => {
+    const msg = String(e?.message || '').trim()
+    if (!msg) return fallback
+    if (msg.includes('Failed to fetch')) return '네트워크 연결 문제로 요청에 실패했습니다. 잠시 후 다시 시도해 주세요.'
+    return msg
+  }
+
+  const showNotice = (message, type = 'info') => {
+    setNotice({ type, message })
+    setTimeout(() => setNotice({ type: '', message: '' }), 2600)
   }
 
   const moveFocusToRow = (nextIndex) => {
@@ -175,7 +186,9 @@ export default function FoldersPage() {
       setCreateForm({ name: '', description: '', color: '#f59e0b' })
       showNotice('폴더가 생성되었습니다.')
     } catch (e) {
-      setError(e.message)
+      const msg = normalizeError(e)
+      setError(msg)
+      showNotice(msg, 'error')
     }
   }
 
@@ -192,7 +205,9 @@ export default function FoldersPage() {
       await refreshDocs(editForm.id)
       showNotice('폴더가 수정되었습니다.')
     } catch (e) {
-      setError(e.message)
+      const msg = normalizeError(e)
+      setError(msg)
+      showNotice(msg, 'error')
     }
   }
 
@@ -206,7 +221,9 @@ export default function FoldersPage() {
       await refreshFolders()
       showNotice('폴더가 삭제되었습니다.')
     } catch (e) {
-      setError(e.message)
+      const msg = normalizeError(e)
+      setError(msg)
+      showNotice(msg, 'error')
     }
   }
 
@@ -219,7 +236,9 @@ export default function FoldersPage() {
       await refreshDocs(selectedFolderId)
       showNotice('문서가 업로드되었습니다.')
     } catch (e) {
-      setError(e.message)
+      const msg = normalizeError(e)
+      setError(msg)
+      showNotice(msg, 'error')
     }
   }
 
@@ -233,7 +252,9 @@ export default function FoldersPage() {
       }
       showNotice('중요 표시를 변경했습니다.')
     } catch (e) {
-      setError(e.message)
+      const msg = normalizeError(e)
+      setError(msg)
+      showNotice(msg, 'error')
     }
   }
 
@@ -249,7 +270,9 @@ export default function FoldersPage() {
       await refreshDocs(selectedFolderId)
       showNotice('문서를 삭제했습니다.')
     } catch (e) {
-      setError(e.message)
+      const msg = normalizeError(e)
+      setError(msg)
+      showNotice(msg, 'error')
     }
   }
 
@@ -262,7 +285,9 @@ export default function FoldersPage() {
       setCheckedDocIds([])
       showNotice('선택 문서를 삭제했습니다.')
     } catch (e) {
-      setError(e.message)
+      const msg = normalizeError(e)
+      setError(msg)
+      showNotice(msg, 'error')
     }
   }
 
@@ -280,7 +305,9 @@ export default function FoldersPage() {
       await refreshDocs(selectedFolderId)
       showNotice('메모를 저장했습니다.')
     } catch (e) {
-      setError(e.message)
+      const msg = normalizeError(e)
+      setError(msg)
+      showNotice(msg, 'error')
     }
   }
 
@@ -288,7 +315,7 @@ export default function FoldersPage() {
     <section>
       <h1>폴더/문서 관리</h1>
       <p className="muted">API Base: {apiClient.baseUrl}</p>
-      {notice && <div className="state">{notice}</div>}
+      {notice.message && <div className={`toast ${notice.type}`}>{notice.message}</div>}
 
       <div className="grid2">
         <FolderSidebar
