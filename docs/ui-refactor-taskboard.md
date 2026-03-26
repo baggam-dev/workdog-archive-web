@@ -10,8 +10,8 @@
 - [x] AppCard featured/modern 아이콘/상태배지 반영
 
 ## P2 Archive 프레임
-- [ ] 사이드바 폭/간격/스타일 조정
-- [ ] 페이지 헤더 위계 정리
+- [x] 사이드바 폭/간격/스타일 조정
+- [x] 페이지 헤더 위계 정리
 
 ## P3 Archive 문서관리
 - [ ] FilterBar 2단 구조

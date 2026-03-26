@@ -104,13 +104,16 @@ tr:focus { outline:2px solid var(--brand-500); outline-offset:-2px; background:v
 .doc-card h3 { margin:0; font-size:var(--fs-14); }
 .doc-head { display:flex; justify-content:space-between; align-items:center; }
 
-.app-shell { display:grid; grid-template-columns: 220px 1fr; gap:var(--space-3); align-items:start; }
-.app-sidenav { border:1px solid var(--line-default); border-radius:var(--radius-lg); background:var(--bg-surface); padding:var(--space-3); position:sticky; top:72px; }
-.app-sidenav h3 { margin:0 0 10px; font-size:var(--fs-14); color:var(--text-strong); }
-.app-nav { display:grid; gap:6px; }
-.app-nav a { text-decoration:none; color:var(--text-link); border:1px solid var(--line-default); background:var(--bg-subtle); border-radius:var(--radius-md); padding:var(--space-2) 10px; font-size:var(--fs-13); }
-.app-nav a.active { border-color:var(--brand-500); background:var(--brand-100); color:var(--brand-500); font-weight:600; }
-.nav-disabled { border:1px dashed var(--line-strong); background:var(--bg-subtle); color:var(--text-disabled); border-radius:var(--radius-md); padding:var(--space-2) 10px; text-align:left; }
+.app-shell { display:grid; grid-template-columns: 240px 1fr; gap:var(--space-6); align-items:start; }
+.app-sidenav { border:1px solid var(--line-soft); border-radius:var(--radius-lg); background:var(--bg-surface); padding:var(--space-5); position:sticky; top:80px; box-shadow:0 1px 3px rgba(0,0,0,.05); }
+.app-sidenav h3 { margin:0 0 var(--space-4); font-size:var(--fs-15); font-weight:600; color:var(--text-strong); }
+.app-nav { display:grid; gap:4px; }
+.app-nav a { display:flex; align-items:center; gap:10px; text-decoration:none; color:var(--text-secondary); border:none; background:transparent; border-radius:var(--radius-md); padding:10px 12px; font-size:var(--fs-14); font-weight:500; transition:all .15s ease; }
+.app-nav a:hover { background:var(--bg-subtle); color:var(--text-primary); }
+.app-nav a.active { background:var(--brand-100); color:var(--brand-500); font-weight:600; }
+.nav-item-icon { width:16px; height:16px; display:inline-flex; align-items:center; justify-content:center; opacity:.7; }
+.app-nav a.active .nav-item-icon { opacity:1; }
+.nav-disabled { display:flex; align-items:center; gap:10px; border:none; background:transparent; color:var(--text-disabled); border-radius:var(--radius-md); padding:10px 12px; text-align:left; }
 .app-content { min-width:0; }
 
 .portal-home .page-hero { margin-bottom:var(--space-8); }
