@@ -29,6 +29,19 @@ function formatKST(iso) {
   }
 }
 
+function formatKSTDateOnly(iso) {
+  try {
+    return new Date(iso).toLocaleDateString('ko-KR', {
+      timeZone: 'Asia/Seoul',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    })
+  } catch {
+    return iso
+  }
+}
+
 function statusState(loading, error, length) {
   if (loading) return { cls: 'loading', msg: '데이터를 불러오는 중...' }
   if (error) return { cls: 'error', msg: `로드 실패: ${error}` }
@@ -389,7 +402,16 @@ export default function FoldersPage() {
           </div>
 
           <div className="table-wrap desktop-only">
-            <table>
+            <table className="doc-table">
+              <colgroup>
+                <col className="col-check" />
+                <col className="col-important" />
+                <col className="col-title" />
+                <col className="col-type" />
+                <col className="col-category" />
+                <col className="col-date" />
+                <col className="col-action" />
+              </colgroup>
               <thead>
                 <tr>
                   <th><input type="checkbox" checked={filteredDocs.length > 0 && checkedDocIds.length === filteredDocs.length} onChange={(e) => {
@@ -450,12 +472,12 @@ export default function FoldersPage() {
                       else setCheckedDocIds((v) => v.filter((id) => id !== d.id))
                     }} /></td>
                     <td><button className={`star-btn ${d.isImportant ? 'on' : ''}`} onClick={() => onToggleImportant(d)}>{d.isImportant ? '★' : '☆'}</button></td>
-                    <td title={d.fileName}>{d.title}</td>
-                    <td>{String(d.fileType || '').toUpperCase()}</td>
-                    <td>{d.category || '기타'}</td>
-                    <td>{formatKST(d.uploadedAt)}</td>
+                    <td className="ellipsis" title={d.fileName || d.title}>{d.title}</td>
+                    <td className="ellipsis" title={String(d.fileType || '').toUpperCase()}>{String(d.fileType || '').toUpperCase()}</td>
+                    <td className="ellipsis" title={d.category || '기타'}>{d.category || '기타'}</td>
+                    <td title={formatKST(d.uploadedAt)}>{formatKSTDateOnly(d.uploadedAt)}</td>
                     <td>
-                      <div className="actions">
+                      <div className="actions table-actions">
                         <button className="btn" type="button" onClick={() => onOpenDetail(d)}>상세</button>
                         <button className="btn danger" type="button" onClick={() => onDeleteOne(d.id)}>삭제</button>
                       </div>

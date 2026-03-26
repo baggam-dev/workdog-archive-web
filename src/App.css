@@ -31,10 +31,21 @@ h2 { margin:0; font-size:17px; }
 .mini-check-wrap { display:flex; align-items:center; gap:6px; font-size:13px; color:#334155; }
 
 .table-wrap { border:1px solid #d8e1ec; border-radius:8px; overflow:auto; }
-table { width:100%; border-collapse:collapse; min-width:840px; }
+table { width:100%; border-collapse:collapse; min-width:840px; table-layout:fixed; }
 th, td { border-bottom:1px solid #e6ebf2; padding:9px 8px; text-align:left; font-size:13px; vertical-align:middle; }
 thead th { position:sticky; top:0; background:#f8fafc; z-index:1; }
 .th-btn { border:0; background:transparent; color:#475569; font-weight:700; padding:0; cursor:pointer; }
+
+.col-check { width:42px; }
+.col-important { width:64px; }
+.col-title { width:38%; }
+.col-type { width:90px; }
+.col-category { width:130px; }
+.col-date { width:130px; }
+.col-action { width:150px; }
+
+.ellipsis { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.table-actions { justify-content:flex-end; flex-wrap:nowrap; }
 .star-btn { border:0; background:transparent; font-size:18px; line-height:1; cursor:pointer; color:#94a3b8; }
 .star-btn.on { color:#f59e0b; }
 tr.row-active { background:#f5f9ff; }
