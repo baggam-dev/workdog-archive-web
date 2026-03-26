@@ -1,13 +1,16 @@
-function SearchIcon() {
-  return <span aria-hidden="true">⌕</span>
-}
-
-function StarIcon() {
-  return <span aria-hidden="true">★</span>
-}
-
-function XIcon() {
-  return <span aria-hidden="true">✕</span>
+function InlineIcon({ type }) {
+  const map = {
+    search: <><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></>,
+    star: <><path d="m12 3 2.7 5.4 6 .9-4.3 4.2 1 6-5.4-2.8-5.4 2.8 1-6L3.3 9.3l6-.9z" /></>,
+    close: <><path d="M6 6l12 12M18 6 6 18" /></>,
+  }
+  return (
+    <span className="inline-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        {map[type]}
+      </svg>
+    </span>
+  )
 }
 
 export default function FilterBar({
@@ -20,7 +23,7 @@ export default function FilterBar({
   return (
     <div className="filter-container">
       <div className="filter-search">
-        <SearchIcon />
+        <InlineIcon type="search" />
         <input
           placeholder="문서 제목 검색..."
           value={filter.title}
@@ -41,11 +44,11 @@ export default function FilterBar({
 
         <label className="filter-checkbox">
           <input type="checkbox" checked={filter.onlyImportant} onChange={(e) => setFilter((v) => ({ ...v, onlyImportant: e.target.checked }))} />
-          <StarIcon /> 중요 문서만
+          <InlineIcon type="star" /> 중요 문서만
         </label>
 
-        <button className="btn ghost" type="button" onClick={() => setFilter(defaultFilter)}>
-          <XIcon /> 필터 초기화
+        <button className="btn ghost btn-sm" type="button" onClick={() => setFilter(defaultFilter)}>
+          <InlineIcon type="close" /> 필터 초기화
         </button>
       </div>
     </div>

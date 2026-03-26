@@ -72,9 +72,9 @@ export default function DocumentsPanel({
       />
 
       <div className="summary-grid">
-        <SummaryStat label="표시 문서" value={filteredDocs.length} icon="📄" />
-        <SummaryStat label="중요 문서" value={filteredDocs.filter((d) => d.isImportant).length} icon="★" />
-        <SummaryStat label="선택 문서" value={checkedDocIds.length} icon="☑" />
+        <SummaryStat label="표시 문서" value={filteredDocs.length} icon="docs" />
+        <SummaryStat label="중요 문서" value={filteredDocs.filter((d) => d.isImportant).length} icon="important" />
+        <SummaryStat label="선택 문서" value={checkedDocIds.length} icon="selected" />
       </div>
 
       <div className="actions" style={{ marginBottom: 8 }}>
