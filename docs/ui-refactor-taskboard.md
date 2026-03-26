@@ -3,7 +3,7 @@
 ## Sprint A - 구조/흐름
 - [x] A1 포탈 런처 단순화 (카드 클릭 즉시 진입)
 - [x] A2 AppCard 정보 최소화 (앱명/상태/설명)
-- [ ] A3 Archive 문서 화면 Primary 1개 정리
+- [x] A3 Archive 문서 화면 Primary 1개 정리
 - [ ] A4 Row 액션 메뉴화(⋯)
 
 ## Sprint B - 화면 분리

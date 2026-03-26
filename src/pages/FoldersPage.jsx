@@ -70,6 +70,7 @@ export default function FoldersPage() {
   const [createForm, setCreateForm] = useState({ name: '', description: '', color: '#f59e0b' })
   const [editForm, setEditForm] = useState({ id: '', name: '', description: '', color: '#f59e0b' })
   const [uploadForm, setUploadForm] = useState({ title: '', file: null })
+  const [uploadPanelOpen, setUploadPanelOpen] = useState(false)
 
   const [activeDoc, setActiveDoc] = useState(null)
   const [memoText, setMemoText] = useState('')
@@ -235,6 +236,7 @@ export default function FoldersPage() {
     try {
       await apiClient.uploadDocument(selectedFolderId, uploadForm.title, uploadForm.file)
       setUploadForm({ title: '', file: null })
+      setUploadPanelOpen(false)
       await refreshDocs(selectedFolderId)
       showNotice('문서가 업로드되었습니다.')
     } catch (e) {
@@ -315,7 +317,11 @@ export default function FoldersPage() {
 
   return (
     <section>
-      <PageHeader title="폴더/문서 관리" description={`API Base: ${apiClient.baseUrl}`} />
+      <PageHeader
+        title="폴더/문서 관리"
+        description="문서 목록 중심 작업 화면"
+        actions={<button className="btn primary" type="button" onClick={() => setUploadPanelOpen((v) => !v)}>+ 업로드</button>}
+      />
       <Toast type={notice.type} message={notice.message} />
 
       <div className="grid2">
@@ -345,6 +351,8 @@ export default function FoldersPage() {
           uploadForm={uploadForm}
           setUploadForm={setUploadForm}
           onUpload={onUpload}
+          uploadPanelOpen={uploadPanelOpen}
+          setUploadPanelOpen={setUploadPanelOpen}
           filter={filter}
           setFilter={setFilter}
           categories={categories}
