@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import FilterBar from '../common/FilterBar'
 import DataTable from '../common/DataTable'
 import InlineState from '../common/InlineState'
@@ -8,6 +9,9 @@ import ActionMenu from '../common/ActionMenu'
 export default function DocumentsPanel({
   state,
   folderInfo,
+  folders,
+  selectedFolderId,
+  setSelectedFolderId,
   formatKST,
   formatKSTDateOnly,
   filter,
@@ -38,6 +42,14 @@ export default function DocumentsPanel({
     <article className="panel">
       <h2>문서</h2>
       <InlineState cls={state.cls} message={state.msg} />
+
+      <div className="folder-switch-row">
+        <select value={selectedFolderId} onChange={(e) => setSelectedFolderId(e.target.value)}>
+          <option value="">폴더 선택</option>
+          {folders.map((f) => <option key={f.id} value={f.id}>{f.name}</option>)}
+        </select>
+        <Link className="btn" to="/archive/folders">폴더 관리</Link>
+      </div>
 
       {folderInfo && <div className="meta-line">선택 폴더: <b>{folderInfo.name}</b> · 생성일: {formatKST(folderInfo.createdAt)}</div>}
 

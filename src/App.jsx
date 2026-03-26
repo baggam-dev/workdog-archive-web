@@ -5,6 +5,7 @@ import PortalHomePage from './pages/PortalHomePage'
 import HomePage from './pages/HomePage'
 import FoldersPage from './pages/FoldersPage'
 import DocsPage from './pages/DocsPage'
+import FolderManagementPage from './pages/FolderManagementPage'
 import './App.css'
 
 function PlaceholderPage({ title, desc }) {
@@ -35,6 +36,14 @@ function App() {
           element={(
             <AppLayout appName="Workdog-Archive">
               <FoldersPage />
+            </AppLayout>
+          )}
+        />
+        <Route
+          path="/archive/folders"
+          element={(
+            <AppLayout appName="Workdog-Archive">
+              <FolderManagementPage />
             </AppLayout>
           )}
         />

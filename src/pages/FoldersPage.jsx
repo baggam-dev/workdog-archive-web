@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { apiClient } from '../lib/apiClient'
 import useDocumentViewModel from '../hooks/useDocumentViewModel'
-import FolderSidebar from '../components/folders/FolderSidebar'
 import DocumentsPanel from '../components/folders/DocumentsPanel'
 import PageHeader from '../components/common/PageHeader'
 import Toast from '../components/common/Toast'
@@ -68,8 +67,6 @@ export default function FoldersPage() {
   const [sort, setSort] = useState({ key: 'uploadedAt', dir: 'desc' })
   const [checkedDocIds, setCheckedDocIds] = useState([])
 
-  const [createForm, setCreateForm] = useState({ name: '', description: '', color: '#f59e0b' })
-  const [editForm, setEditForm] = useState({ id: '', name: '', description: '', color: '#f59e0b' })
   const [uploadForm, setUploadForm] = useState({ title: '', file: null })
   const [uploadPanelOpen, setUploadPanelOpen] = useState(false)
 
@@ -77,6 +74,18 @@ export default function FoldersPage() {
   const [memoText, setMemoText] = useState('')
   const [activeRowIndex, setActiveRowIndex] = useState(0)
   const rowRefs = useRef([])
+
+  const normalizeError = (e, fallback = '요청 처리 중 오류가 발생했습니다.') => {
+    const msg = String(e?.message || '').trim()
+    if (!msg) return fallback
+    if (msg.includes('Failed to fetch')) return '네트워크 연결 문제로 요청에 실패했습니다. 잠시 후 다시 시도해 주세요.'
+    return msg
+  }
+
+  const showNotice = (message, type = 'info') => {
+    setNotice({ type, message })
+    setTimeout(() => setNotice({ type: '', message: '' }), 2600)
+  }
 
   const refreshFolders = async () => {
     const fs = await apiClient.folders()
@@ -164,71 +173,10 @@ export default function FoldersPage() {
     return sort.dir === 'asc' ? '▲' : '▼'
   }
 
-  const normalizeError = (e, fallback = '요청 처리 중 오류가 발생했습니다.') => {
-    const msg = String(e?.message || '').trim()
-    if (!msg) return fallback
-    if (msg.includes('Failed to fetch')) return '네트워크 연결 문제로 요청에 실패했습니다. 잠시 후 다시 시도해 주세요.'
-    return msg
-  }
-
-  const showNotice = (message, type = 'info') => {
-    setNotice({ type, message })
-    setTimeout(() => setNotice({ type: '', message: '' }), 2600)
-  }
-
   const moveFocusToRow = (nextIndex) => {
     setActiveRowIndex(nextIndex)
     const nextEl = rowRefs.current[nextIndex]
     if (nextEl) nextEl.focus()
-  }
-
-  const onCreateFolder = async () => {
-    if (!createForm.name.trim()) return showNotice('폴더명은 필수입니다.')
-    try {
-      await apiClient.createFolder(createForm)
-      await refreshFolders()
-      setCreateForm({ name: '', description: '', color: '#f59e0b' })
-      showNotice('폴더가 생성되었습니다.')
-    } catch (e) {
-      const msg = normalizeError(e)
-      setError(msg)
-      showNotice(msg, 'error')
-    }
-  }
-
-  const onStartEditFolder = () => {
-    if (!folderInfo) return
-    setEditForm({ id: folderInfo.id, name: folderInfo.name || '', description: folderInfo.description || '', color: folderInfo.color || '#f59e0b' })
-  }
-
-  const onSaveEditFolder = async () => {
-    if (!editForm.id) return
-    try {
-      await apiClient.updateFolder(editForm.id, { name: editForm.name, description: editForm.description, color: editForm.color })
-      await refreshFolders()
-      await refreshDocs(editForm.id)
-      showNotice('폴더가 수정되었습니다.')
-    } catch (e) {
-      const msg = normalizeError(e)
-      setError(msg)
-      showNotice(msg, 'error')
-    }
-  }
-
-  const onDeleteFolder = async () => {
-    if (!folderInfo) return
-    if (!window.confirm('선택 폴더를 삭제하시겠습니까?')) return
-    try {
-      await apiClient.deleteFolder(folderInfo.id)
-      setActiveDoc(null)
-      setMemoText('')
-      await refreshFolders()
-      showNotice('폴더가 삭제되었습니다.')
-    } catch (e) {
-      const msg = normalizeError(e)
-      setError(msg)
-      showNotice(msg, 'error')
-    }
   }
 
   const onUpload = async () => {
@@ -319,61 +267,44 @@ export default function FoldersPage() {
   return (
     <section>
       <PageHeader
-        title="폴더/문서 관리"
+        title="문서 관리"
         description="문서 목록 중심 작업 화면"
         actions={<button className="btn primary" type="button" disabled={!selectedFolderId} onClick={() => setUploadPanelOpen((v) => !v)}>+ 업로드</button>}
       />
       <Toast type={notice.type} message={notice.message} />
 
-      <div className="grid2">
-        <FolderSidebar
-          loading={loading}
-          error={error}
-          folders={folders}
-          selectedFolderId={selectedFolderId}
-          setSelectedFolderId={setSelectedFolderId}
-          createForm={createForm}
-          setCreateForm={setCreateForm}
-          onCreateFolder={onCreateFolder}
-          folderInfo={folderInfo}
-          editForm={editForm}
-          setEditForm={setEditForm}
-          onStartEditFolder={onStartEditFolder}
-          onSaveEditFolder={onSaveEditFolder}
-          onDeleteFolder={onDeleteFolder}
-          statusMessage={statusState(loading, error, folders.length).msg}
-        />
-
-        <DocumentsPanel
-          state={state}
-          folderInfo={folderInfo}
-          formatKST={formatKST}
-          formatKSTDateOnly={formatKSTDateOnly}
-          filter={filter}
-          setFilter={setFilter}
-          categories={categories}
-          fileTypes={fileTypes}
-          defaultFilter={defaultFilter}
-          checkedDocIds={checkedDocIds}
-          onBulkDelete={onBulkDelete}
-          filteredDocs={filteredDocs}
-          setCheckedDocIds={setCheckedDocIds}
-          setSortKey={setSortKey}
-          sortMark={sortMark}
-          rowRefs={rowRefs}
-          activeRowIndex={activeRowIndex}
-          setActiveRowIndex={setActiveRowIndex}
-          moveFocusToRow={moveFocusToRow}
-          onOpenDetail={onOpenDetail}
-          onToggleImportant={onToggleImportant}
-          onDeleteOne={onDeleteOne}
-          activeDoc={activeDoc}
-          setActiveDoc={setActiveDoc}
-          memoText={memoText}
-          setMemoText={setMemoText}
-          onSaveMemo={onSaveMemo}
-        />
-      </div>
+      <DocumentsPanel
+        state={state}
+        folderInfo={folderInfo}
+        folders={folders}
+        selectedFolderId={selectedFolderId}
+        setSelectedFolderId={setSelectedFolderId}
+        formatKST={formatKST}
+        formatKSTDateOnly={formatKSTDateOnly}
+        filter={filter}
+        setFilter={setFilter}
+        categories={categories}
+        fileTypes={fileTypes}
+        defaultFilter={defaultFilter}
+        checkedDocIds={checkedDocIds}
+        onBulkDelete={onBulkDelete}
+        filteredDocs={filteredDocs}
+        setCheckedDocIds={setCheckedDocIds}
+        setSortKey={setSortKey}
+        sortMark={sortMark}
+        rowRefs={rowRefs}
+        activeRowIndex={activeRowIndex}
+        setActiveRowIndex={setActiveRowIndex}
+        moveFocusToRow={moveFocusToRow}
+        onOpenDetail={onOpenDetail}
+        onToggleImportant={onToggleImportant}
+        onDeleteOne={onDeleteOne}
+        activeDoc={activeDoc}
+        setActiveDoc={setActiveDoc}
+        memoText={memoText}
+        setMemoText={setMemoText}
+        onSaveMemo={onSaveMemo}
+      />
 
       <UploadModal
         open={uploadPanelOpen}

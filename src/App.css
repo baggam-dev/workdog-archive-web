@@ -38,6 +38,8 @@ h2 { margin:0; font-size:17px; }
 .folder-btn small { color:var(--text-secondary); font-size:12px; }
 
 .meta-line { color:var(--text-secondary); font-size:12px; margin:6px 0 10px; }
+.folder-switch-row { display:flex; gap:8px; margin-bottom:8px; }
+.folder-switch-row select { min-height:34px; border:1px solid #cbd5e1; border-radius:7px; padding:7px 9px; background:var(--bg-surface); min-width:220px; }
 .filters { display:grid; grid-template-columns: 1.2fr 140px 110px 1fr auto auto; gap:8px; margin-bottom:10px; }
 .mini-check-wrap { display:flex; align-items:center; gap:6px; font-size:13px; color:#334155; }
 
@@ -127,6 +129,8 @@ tr:focus { outline:2px solid var(--brand-500); outline-offset:-2px; background:#
   .desktop-only { display:none; }
   .mobile-only { display:block; }
   .filters { grid-template-columns: 1fr; }
+  .folder-switch-row { flex-direction:column; }
+  .folder-switch-row select { min-width:0; width:100%; }
   .app-grid { grid-template-columns:1fr; }
   .summary-grid { grid-template-columns:1fr; }
 }
