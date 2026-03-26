@@ -51,7 +51,7 @@ export default function DocumentsPanel({
         <Link className="btn" to="/archive/folders">폴더 관리</Link>
       </div>
 
-      {folderInfo && <div className="meta-line">선택 폴더: <b>{folderInfo.name}</b> · 생성일: {formatKST(folderInfo.createdAt)}</div>}
+      {folderInfo && <div className="meta-line">현재 폴더: <b>{folderInfo.name}</b></div>}
 
       <FilterBar
         filter={filter}
@@ -68,7 +68,11 @@ export default function DocumentsPanel({
       </div>
 
       <div className="actions" style={{ marginBottom: 8 }}>
-        <button className="btn danger" type="button" disabled={checkedDocIds.length === 0} onClick={onBulkDelete}>선택 삭제 ({checkedDocIds.length})</button>
+        {checkedDocIds.length > 0 ? (
+          <button className="btn danger" type="button" onClick={onBulkDelete}>선택 삭제 ({checkedDocIds.length})</button>
+        ) : (
+          <span className="kbd-help">선택된 문서 없음</span>
+        )}
         <span className="kbd-help">키보드: ↑/↓, Home/End, Enter(상세), Space(중요)</span>
       </div>
 

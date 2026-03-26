@@ -9,7 +9,7 @@
 ## Sprint B - 화면 분리
 - [x] B1 UploadModal 도입
 - [x] B2 폴더 화면 완전 분리
-- [ ] B3 문서 화면 집중형 레이아웃 정리
+- [x] B3 문서 화면 집중형 레이아웃 정리
 
 ## Sprint C - 디자인 일관성
 - [ ] C1 색상 최소화(Neutral/Brand/Danger)
