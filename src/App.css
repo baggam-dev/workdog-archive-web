@@ -57,6 +57,12 @@ thead th { position:sticky; top:0; background:var(--bg-subtle); z-index:1; }
 
 .ellipsis { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .table-actions { justify-content:flex-end; flex-wrap:nowrap; }
+.action-menu { position:relative; display:flex; justify-content:flex-end; }
+.icon-btn { width:30px; height:30px; border:1px solid var(--line-default); border-radius:var(--radius-sm); background:var(--bg-surface); cursor:pointer; }
+.action-menu-popover { position:absolute; top:34px; right:0; min-width:120px; border:1px solid var(--line-default); background:var(--bg-surface); border-radius:var(--radius-md); box-shadow:0 8px 20px rgba(15,23,42,.12); padding:4px; display:grid; gap:2px; z-index:5; }
+.menu-item { border:0; background:transparent; text-align:left; padding:8px; border-radius:6px; cursor:pointer; color:var(--text-primary); }
+.menu-item:hover { background:var(--bg-subtle); }
+.menu-item.danger { color:var(--danger-500); }
 .star-btn { border:0; background:transparent; font-size:18px; line-height:1; cursor:pointer; color:#94a3b8; }
 .star-btn.on { color:#f59e0b; }
 tr.row-active { background:#f5f9ff; }
