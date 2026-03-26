@@ -12,7 +12,7 @@
 - [x] B3 문서 화면 집중형 레이아웃 정리
 
 ## Sprint C - 디자인 일관성
-- [ ] C1 색상 최소화(Neutral/Brand/Danger)
+- [x] C1 색상 최소화(Neutral/Brand/Danger)
 - [ ] C2 타이포/간격 토큰 QA
 - [ ] C3 상태 배지 단순화(운영중/준비중/점검중)
 

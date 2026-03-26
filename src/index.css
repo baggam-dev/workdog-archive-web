@@ -10,6 +10,26 @@
   --line-default: #d8e1ec;
   --line-soft: #e6ebf2;
 
+  --text-tertiary: #475569;
+  --text-inverse: #1f2937;
+  --text-link: #334155;
+  --text-disabled: #94a3b8;
+
+  --info-500: #1d4ed8;
+  --info-100: #eff6ff;
+  --info-200: #bfdbfe;
+
+  --success-500: #166534;
+  --success-100: #ecfdf3;
+  --success-200: #bbf7d0;
+
+  --warn-500: #9a3412;
+  --warn-100: #fff7ed;
+  --warn-200: #fed7aa;
+
+  --line-strong: #cbd5e1;
+  --line-button: #c7d2df;
+
   --brand-500: #1f4e79;
   --brand-100: #e8eff8;
 
