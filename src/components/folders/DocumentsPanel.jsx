@@ -1,6 +1,9 @@
 import FilterBar from '../common/FilterBar'
 import DataTable from '../common/DataTable'
 import InlineState from '../common/InlineState'
+import SummaryStat from '../common/SummaryStat'
+import EmptyState from '../common/EmptyState'
+import ActionMenu from '../common/ActionMenu'
 
 export default function DocumentsPanel({
   state,
@@ -56,6 +59,12 @@ export default function DocumentsPanel({
         defaultFilter={defaultFilter}
       />
 
+      <div className="summary-grid">
+        <SummaryStat label="표시 문서" value={filteredDocs.length} />
+        <SummaryStat label="중요 문서" value={filteredDocs.filter((d) => d.isImportant).length} />
+        <SummaryStat label="선택 문서" value={checkedDocIds.length} />
+      </div>
+
       <div className="actions" style={{ marginBottom: 8 }}>
         <button className="btn danger" type="button" disabled={checkedDocIds.length === 0} onClick={onBulkDelete}>선택 삭제 ({checkedDocIds.length})</button>
         <span className="kbd-help">키보드: ↑/↓, Home/End, Enter(상세), Space(중요)</span>
@@ -69,7 +78,13 @@ export default function DocumentsPanel({
         }}
         sortMark={sortMark}
         setSortKey={setSortKey}
-        rows={filteredDocs.map((d, idx) => (
+        rows={filteredDocs.length === 0 ? (
+          <tr>
+            <td colSpan={7}>
+              <EmptyState title="표시할 문서가 없습니다." description="필터 조건을 바꾸거나 새 문서를 업로드해 주세요." />
+            </td>
+          </tr>
+        ) : filteredDocs.map((d, idx) => (
           <tr
             key={d.id}
             ref={(el) => (rowRefs.current[idx] = el)}
@@ -108,17 +123,16 @@ export default function DocumentsPanel({
             <td className="ellipsis" title={d.category || '기타'}>{d.category || '기타'}</td>
             <td title={formatKST(d.uploadedAt)}>{formatKSTDateOnly(d.uploadedAt)}</td>
             <td>
-              <div className="actions table-actions">
-                <button className="btn" type="button" onClick={() => onOpenDetail(d)}>상세</button>
-                <button className="btn danger" type="button" onClick={() => onDeleteOne(d.id)}>삭제</button>
-              </div>
+              <ActionMenu onDetail={() => onOpenDetail(d)} onDelete={() => onDeleteOne(d.id)} />
             </td>
           </tr>
         ))}
       />
 
       <div className="mobile-only card-list">
-        {filteredDocs.map((d) => (
+        {filteredDocs.length === 0 ? (
+          <EmptyState title="표시할 문서가 없습니다." description="필터 조건을 바꾸거나 새 문서를 업로드해 주세요." />
+        ) : filteredDocs.map((d) => (
           <article className="doc-card" key={`m-${d.id}`}>
             <div className="doc-head">
               <label className="mini-check-wrap">
