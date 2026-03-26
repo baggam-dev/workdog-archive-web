@@ -16,7 +16,7 @@ export default function AppCard({ app }) {
     return (
       <article className="app-card app-card-disabled" aria-disabled="true">
         <div className="app-card-top">
-          <strong>{app.name}</strong>
+          <strong className="app-title-wrap"><span className="app-icon" aria-hidden="true">{app.icon || '📦'}</span>{app.name}</strong>
           <StatusBadge status={app.status} />
         </div>
         <p className="muted">{app.desc}</p>
