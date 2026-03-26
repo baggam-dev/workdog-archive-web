@@ -43,12 +43,22 @@ export default function DocumentsPanel({
       <h2>문서</h2>
       <InlineState cls={state.cls} message={state.msg} />
 
-      <div className="folder-switch-row">
-        <select value={selectedFolderId} onChange={(e) => setSelectedFolderId(e.target.value)}>
-          <option value="">폴더 선택</option>
-          {folders.map((f) => <option key={f.id} value={f.id}>{f.name}</option>)}
-        </select>
-        <Link className="btn" to="/archive/folders">폴더 관리</Link>
+      <div className="folder-selector">
+        <div className="folder-tabs">
+          {folders.map((f) => (
+            <button
+              key={f.id}
+              className={`folder-tab ${selectedFolderId === f.id ? 'active' : ''}`}
+              type="button"
+              onClick={() => setSelectedFolderId(f.id)}
+            >
+              <span className="nav-item-icon" aria-hidden="true">◫</span>
+              <span>{f.name}</span>
+              <span className="folder-count">{f.documentCount ?? 0}</span>
+            </button>
+          ))}
+        </div>
+        <Link className="btn secondary" to="/archive/folders">폴더 관리</Link>
       </div>
 
       {folderInfo && <div className="meta-line">현재 폴더: <b>{folderInfo.name}</b></div>}
@@ -62,9 +72,9 @@ export default function DocumentsPanel({
       />
 
       <div className="summary-grid">
-        <SummaryStat label="표시 문서" value={filteredDocs.length} />
-        <SummaryStat label="중요 문서" value={filteredDocs.filter((d) => d.isImportant).length} />
-        <SummaryStat label="선택 문서" value={checkedDocIds.length} />
+        <SummaryStat label="표시 문서" value={filteredDocs.length} icon="📄" />
+        <SummaryStat label="중요 문서" value={filteredDocs.filter((d) => d.isImportant).length} icon="★" />
+        <SummaryStat label="선택 문서" value={checkedDocIds.length} icon="☑" />
       </div>
 
       <div className="actions" style={{ marginBottom: 8 }}>

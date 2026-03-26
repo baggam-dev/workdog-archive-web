@@ -2,7 +2,7 @@
 
 ## P0 공통 토큰/기본
 - [x] 색상/타이포/line-height/spacing 토큰 확장
-- [ ] 공통 버튼/입력 focus ring 정리
+- [x] 공통 버튼/입력 focus ring 정리
 
 ## P1 Portal
 - [x] Portal 헤더 리디자인 (brand/nav/actions)
@@ -14,10 +14,10 @@
 - [x] 페이지 헤더 위계 정리
 
 ## P3 Archive 문서관리
-- [ ] FilterBar 2단 구조
-- [ ] Summary Stat 강화
-- [ ] 폴더 선택 탭 UI
-- [ ] 테이블 hover/active/checkbox/star 개선
+- [x] FilterBar 2단 구조
+- [x] Summary Stat 강화
+- [x] 폴더 선택 탭 UI
+- [x] 테이블 hover/active/checkbox/star 개선
 
 ## P4 마감
 - [ ] 시각 QA
