@@ -198,27 +198,40 @@ export default function DocumentsPanel({
       {activeDoc && (
         <div className="modal-backdrop" onClick={() => setActiveDoc(null)}>
           <div className="modal doc-detail-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="title-row">
-              <h2>문서 상세 · {activeDoc.title}</h2>
+            <div className="doc-modal-head">
+              <div>
+                <h2>문서 상세 · {activeDoc.title}</h2>
+                <p className="meta">형식: {activeDoc.fileType} · 수정일: {formatKST(activeDoc.uploadedAt)}</p>
+              </div>
               <button className="btn" type="button" onClick={() => setActiveDoc(null)}>닫기</button>
             </div>
-            <div className="meta">형식: {activeDoc.fileType} · 수정일: {formatKST(activeDoc.uploadedAt)}</div>
-            <div className="meta">요약: {activeDoc.summaryOneLine || '-'}</div>
 
-            <button className="btn secondary btn-sm" type="button" onClick={() => setFullOpen((v) => !v)}>
-              {fullOpen ? '전체내용 접기' : '전체내용 보기'}
-            </button>
+            <section className="doc-modal-section">
+              <h3>요약</h3>
+              <p>{activeDoc.summaryOneLine || '-'}</p>
+            </section>
 
-            {fullOpen && (
-              <article className="doc-fulltext-box">
-                <pre>{fullText || '문서 전체내용이 아직 없습니다.'}</pre>
-              </article>
-            )}
+            <section className="doc-modal-section">
+              <div className="title-row">
+                <h3>문서 전체내용</h3>
+                <button className="btn secondary btn-sm" type="button" onClick={() => setFullOpen((v) => !v)}>
+                  {fullOpen ? '접기' : '전체보기'}
+                </button>
+              </div>
+              {fullOpen && (
+                <article className="doc-fulltext-box">
+                  <pre>{fullText || '문서 전체내용이 아직 없습니다.'}</pre>
+                </article>
+              )}
+            </section>
 
-            <textarea value={memoText} onChange={(e) => setMemoText(e.target.value)} placeholder="메모를 입력하세요" rows={4} />
-            <div className="actions right-actions">
-              <button className="btn" type="button" onClick={onSaveMemo}>메모 저장</button>
-            </div>
+            <section className="doc-modal-section">
+              <h3>메모</h3>
+              <textarea value={memoText} onChange={(e) => setMemoText(e.target.value)} placeholder="메모를 입력하세요" rows={5} />
+              <div className="actions right-actions">
+                <button className="btn" type="button" onClick={onSaveMemo}>메모 저장</button>
+              </div>
+            </section>
           </div>
         </div>
       )}
