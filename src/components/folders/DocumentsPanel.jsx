@@ -166,35 +166,6 @@ export default function DocumentsPanel({
         ))}
       />
 
-      <div className="mobile-only card-list">
-        {filteredDocs.length === 0 ? (
-          <EmptyState title="표시할 문서가 없습니다." description="필터 조건을 바꾸거나 새 문서를 업로드해 주세요." />
-        ) : filteredDocs.map((d) => (
-          <article className="doc-card" key={`m-${d.id}`}>
-            <div className="doc-head">
-              <label className="mini-check-wrap">
-                <input
-                  type="checkbox"
-                  checked={checkedDocIds.includes(d.id)}
-                  onChange={(e) => {
-                    if (e.target.checked) setCheckedDocIds((v) => [...new Set([...v, d.id])])
-                    else setCheckedDocIds((v) => v.filter((id) => id !== d.id))
-                  }}
-                />선택
-              </label>
-              <button className={`star-btn ${d.isImportant ? 'on' : ''}`} onClick={() => onToggleImportant(d)}>{d.isImportant ? '★' : '☆'}</button>
-            </div>
-            <h3>{d.title}</h3>
-            <p className="meta">형식: {String(d.fileType || '').toUpperCase()} · 카테고리: {d.category || '기타'}</p>
-            <p className="meta">수정일: {formatKST(d.uploadedAt)}</p>
-            <div className="actions right-actions">
-              <button className="btn" type="button" onClick={() => onOpenDetail(d)}>상세</button>
-              <button className="btn danger" type="button" onClick={() => onDeleteOne(d.id)}>삭제</button>
-            </div>
-          </article>
-        ))}
-      </div>
-
       {activeDoc && (
         <div className="modal-backdrop" onClick={() => setActiveDoc(null)}>
           <div className="modal doc-detail-modal" onClick={(e) => e.stopPropagation()}>
