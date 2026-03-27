@@ -113,12 +113,12 @@ tr:focus { outline:2px solid var(--brand-500); outline-offset:-2px; background:v
 
 .summary-grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:var(--space-4); margin-bottom:var(--space-6); }
 .summary-grid.compact { gap:10px; margin-bottom:14px; }
-.summary-stat { border:1px solid var(--line-soft); background:var(--bg-surface); border-radius:12px; padding:10px 12px; display:grid; gap:4px; box-shadow:0 1px 2px rgba(0,0,0,.04); transition:all .2s ease; }
+.summary-stat { border:1px solid var(--line-soft); background:var(--bg-surface); border-radius:12px; padding:10px 12px; display:flex; align-items:center; gap:8px; box-shadow:0 1px 2px rgba(0,0,0,.04); transition:all .2s ease; }
 .summary-stat:hover { border-color:var(--brand-200); box-shadow:0 2px 6px rgba(0,0,0,.08); }
-.summary-stat-icon { width:24px; height:24px; display:flex; align-items:center; justify-content:center; border-radius:8px; background:var(--brand-100); color:var(--brand-500); margin-bottom:2px; }
-.summary-stat-icon svg { width:14px; height:14px; }
-.summary-label { font-size:11px; font-weight:600; color:var(--text-secondary); display:flex; align-items:center; gap:6px; }
-.summary-value { font-size:18px; font-weight:700; color:var(--text-strong); line-height:1; }
+.summary-stat-icon { width:22px; height:22px; display:flex; align-items:center; justify-content:center; border-radius:8px; background:var(--brand-100); color:var(--brand-500); }
+.summary-stat-icon svg { width:13px; height:13px; }
+.summary-label { font-size:12px; font-weight:600; color:var(--text-secondary); white-space:nowrap; }
+.summary-value { margin-left:auto; font-size:18px; font-weight:700; color:var(--text-strong); line-height:1; }
 
 .empty-state { border:1px dashed var(--line-strong); background:var(--bg-subtle); border-radius:var(--radius-md); padding:14px; text-align:center; color:var(--text-tertiary); }
 .title-row { display:flex; justify-content:space-between; align-items:center; gap:var(--space-2); }
@@ -135,7 +135,7 @@ tr:focus { outline:2px solid var(--brand-500); outline-offset:-2px; background:v
 
 .modal-backdrop { position:fixed; inset:0; background:rgba(15,23,42,.35); display:flex; align-items:center; justify-content:center; z-index:50; padding:16px; }
 .modal { width:min(560px, 100%); border:1px solid var(--line-default); border-radius:var(--radius-lg); background:var(--bg-surface); padding:var(--space-3); box-shadow:0 16px 40px rgba(15,23,42,.2); }
-.doc-detail-modal { width:min(820px, 100%); display:grid; gap:10px; }
+.doc-detail-modal { width:min(80vw, 1100px); min-height:78vh; max-height:92vh; overflow:auto; display:grid; gap:10px; }
 .doc-fulltext-box { border:1px solid var(--line-soft); border-radius:10px; background:#f8fafc; max-height:280px; overflow:auto; padding:10px; }
 .doc-fulltext-box pre { margin:0; white-space:pre-wrap; word-break:break-word; font-size:13px; line-height:1.5; color:#334155; }
 .right-actions { justify-content:flex-end; }
@@ -247,9 +247,11 @@ input[type="checkbox"]:checked::after {
 .folder-detail-wrap { display:grid; gap:18px; }
 .folder-detail-head { display:flex; justify-content:space-between; align-items:flex-start; gap:12px; }
 .folder-detail-title { display:flex; gap:14px; align-items:flex-start; }
-.folder-detail-title h3 { margin:0 0 6px; font-size:28px; letter-spacing:-0.02em; }
-.folder-detail-title p { margin:0; color:#6b7280; font-size:15px; }
+.folder-detail-title h3 { margin:0; font-size:28px; letter-spacing:-0.02em; }
 .folder-close-btn { width:36px; height:36px; border:0; border-radius:8px; background:transparent; color:#6b7280; font-size:30px; cursor:pointer; }
+.folder-detail-description { border:1px solid #e5e7eb; border-radius:14px; background:#fff; padding:14px 16px; min-height:116px; display:grid; gap:8px; }
+.folder-detail-description h4 { margin:0; font-size:14px; color:#6b7280; }
+.folder-detail-description p { margin:0; font-size:15px; color:#374151; line-height:1.5; }
 .folder-close-btn:hover { background:#f3f4f6; color:#111827; }
 .folder-detail-stats { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:12px; }
 .folder-mini-stat { border:1px solid #e5e7eb; border-radius:14px; background:#fff; padding:16px; display:grid; gap:6px; }

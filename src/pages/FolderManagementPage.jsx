@@ -45,7 +45,15 @@ export default function FolderManagementPage() {
 
   const refreshFolders = async () => {
     const fs = await apiClient.folders()
-    const nextFolders = Array.isArray(fs) ? fs : []
+    const base = Array.isArray(fs) ? fs : []
+    const nextFolders = await Promise.all(base.map(async (f) => {
+      try {
+        const docs = await apiClient.folderDocuments(f.id)
+        return { ...f, documentCount: Array.isArray(docs) ? docs.length : Number(f.documentCount || 0) }
+      } catch {
+        return { ...f, documentCount: Number(f.documentCount || 0) }
+      }
+    }))
     setFolders(nextFolders)
 
     if (!selectedFolderId) {
@@ -249,10 +257,14 @@ export default function FolderManagementPage() {
                   <span className="folder-icon-badge large" style={{ color: folderInfo.color || '#5B7FF3' }}>📁</span>
                   <div>
                     <h3>{folderInfo.name}</h3>
-                    <p>{folderInfo.description || '설명 없음'}</p>
                   </div>
                 </div>
                 <button className="folder-close-btn" type="button" onClick={onCloseRightPane}>×</button>
+              </div>
+
+              <div className="folder-detail-description">
+                <h4>설명</h4>
+                <p>{folderInfo.description || '설명이 없습니다.'}</p>
               </div>
 
               <div className="folder-detail-stats">
