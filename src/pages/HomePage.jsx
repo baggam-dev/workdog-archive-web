@@ -4,7 +4,7 @@ import PageHeader from '../components/common/PageHeader'
 export default function HomePage() {
   return (
     <section>
-      <div className="coming-alert">⚠ 준비중: 이 대시보드는 샘플 데이터 기반 목업 화면입니다.</div>
+      <div className="coming-alert">⚠ 샘플데이터 준비중: 현재 대시보드는 Figma 기준 UI 목업 화면입니다.</div>
 
       <PageHeader
         title="Workdog-Archive 대시보드"
