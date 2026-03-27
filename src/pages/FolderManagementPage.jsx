@@ -1,8 +1,23 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
 import { apiClient } from '../lib/apiClient'
 import PageHeader from '../components/common/PageHeader'
 import Toast from '../components/common/Toast'
+
+const COLOR_PRESETS = ['#5B7FF3', '#8B5CF6', '#5FB3CF', '#5FB98A', '#E8A83C', '#E25B52', '#D45A9F', '#6B63E8']
+
+function formatDateOnly(value) {
+  if (!value) return '-'
+  try {
+    return new Date(value).toLocaleDateString('ko-KR', {
+      timeZone: 'Asia/Seoul',
+      year: 'numeric',
+      month: 'numeric',
+      day: 'numeric',
+    })
+  } catch {
+    return '-'
+  }
+}
 
 export default function FolderManagementPage() {
   const [loading, setLoading] = useState(true)
@@ -12,9 +27,9 @@ export default function FolderManagementPage() {
   const [folders, setFolders] = useState([])
   const [selectedFolderId, setSelectedFolderId] = useState('')
   const [folderInfo, setFolderInfo] = useState(null)
+  const [mode, setMode] = useState('empty') // empty | detail | edit | create
 
-  const [createForm, setCreateForm] = useState({ name: '', description: '', color: '#f59e0b' })
-  const [editForm, setEditForm] = useState({ id: '', name: '', description: '', color: '#f59e0b' })
+  const [form, setForm] = useState({ id: '', name: '', description: '', color: '#5B7FF3' })
 
   const normalizeError = (e, fallback = '요청 처리 중 오류가 발생했습니다.') => {
     const msg = String(e?.message || '').trim()
@@ -30,15 +45,25 @@ export default function FolderManagementPage() {
 
   const refreshFolders = async () => {
     const fs = await apiClient.folders()
-    setFolders(Array.isArray(fs) ? fs : [])
-    const nextId = selectedFolderId && fs.some((f) => f.id === selectedFolderId) ? selectedFolderId : (fs[0]?.id || '')
-    setSelectedFolderId(nextId)
-    if (nextId) {
-      const folder = await apiClient.folder(nextId)
-      setFolderInfo(folder)
-    } else {
+    const nextFolders = Array.isArray(fs) ? fs : []
+    setFolders(nextFolders)
+
+    if (!selectedFolderId) {
       setFolderInfo(null)
+      setMode((prev) => (prev === 'create' ? 'create' : 'empty'))
+      return
     }
+
+    const stillExists = nextFolders.some((f) => f.id === selectedFolderId)
+    if (!stillExists) {
+      setSelectedFolderId('')
+      setFolderInfo(null)
+      setMode('empty')
+      return
+    }
+
+    const folder = await apiClient.folder(selectedFolderId)
+    setFolderInfo(folder)
   }
 
   useEffect(() => {
@@ -62,23 +87,66 @@ export default function FolderManagementPage() {
   useEffect(() => {
     let mounted = true
     ;(async () => {
-      if (!selectedFolderId) return setFolderInfo(null)
+      if (!selectedFolderId) {
+        setFolderInfo(null)
+        if (mode !== 'create') setMode('empty')
+        return
+      }
       try {
         const folder = await apiClient.folder(selectedFolderId)
-        if (mounted) setFolderInfo(folder)
+        if (!mounted) return
+        setFolderInfo(folder)
+        if (mode !== 'edit') setMode('detail')
       } catch {
-        if (mounted) setFolderInfo(null)
+        if (!mounted) return
+        setFolderInfo(null)
+        if (mode !== 'create') setMode('empty')
       }
     })()
     return () => { mounted = false }
   }, [selectedFolderId])
 
-  const onCreateFolder = async () => {
-    if (!createForm.name.trim()) return showNotice('폴더명은 필수입니다.')
+  const onSelectFolder = (id) => {
+    setSelectedFolderId(id)
+    setMode('detail')
+  }
+
+  const onCloseRightPane = () => {
+    setSelectedFolderId('')
+    setFolderInfo(null)
+    setForm({ id: '', name: '', description: '', color: '#5B7FF3' })
+    setMode('empty')
+  }
+
+  const onStartCreate = () => {
+    setSelectedFolderId('')
+    setFolderInfo(null)
+    setForm({ id: '', name: '', description: '', color: '#5B7FF3' })
+    setMode('create')
+  }
+
+  const onStartEdit = () => {
+    if (!folderInfo) return
+    setForm({
+      id: folderInfo.id,
+      name: folderInfo.name || '',
+      description: folderInfo.description || '',
+      color: folderInfo.color || '#5B7FF3',
+    })
+    setMode('edit')
+  }
+
+  const onSaveCreate = async () => {
+    if (!form.name.trim()) return showNotice('폴더 이름은 필수입니다.')
     try {
-      await apiClient.createFolder(createForm)
-      setCreateForm({ name: '', description: '', color: '#f59e0b' })
+      const created = await apiClient.createFolder({
+        name: form.name,
+        description: form.description,
+        color: form.color,
+      })
       await refreshFolders()
+      if (created?.id) setSelectedFolderId(created.id)
+      setMode('detail')
       showNotice('폴더가 생성되었습니다.')
     } catch (e) {
       const msg = normalizeError(e)
@@ -87,25 +155,17 @@ export default function FolderManagementPage() {
     }
   }
 
-  const onStartEditFolder = () => {
-    if (!folderInfo) return
-    setEditForm({
-      id: folderInfo.id,
-      name: folderInfo.name || '',
-      description: folderInfo.description || '',
-      color: folderInfo.color || '#f59e0b',
-    })
-  }
-
-  const onSaveEditFolder = async () => {
-    if (!editForm.id) return
+  const onSaveEdit = async () => {
+    if (!form.id) return
+    if (!form.name.trim()) return showNotice('폴더 이름은 필수입니다.')
     try {
-      await apiClient.updateFolder(editForm.id, {
-        name: editForm.name,
-        description: editForm.description,
-        color: editForm.color,
+      await apiClient.updateFolder(form.id, {
+        name: form.name,
+        description: form.description,
+        color: form.color,
       })
       await refreshFolders()
+      setMode('detail')
       showNotice('폴더가 수정되었습니다.')
     } catch (e) {
       const msg = normalizeError(e)
@@ -119,7 +179,9 @@ export default function FolderManagementPage() {
     if (!window.confirm('선택 폴더를 삭제하시겠습니까?')) return
     try {
       await apiClient.deleteFolder(folderInfo.id)
+      setSelectedFolderId('')
       await refreshFolders()
+      setMode('empty')
       showNotice('폴더가 삭제되었습니다.')
     } catch (e) {
       const msg = normalizeError(e)
@@ -128,102 +190,142 @@ export default function FolderManagementPage() {
     }
   }
 
-  const totalDocs = useMemo(
-    () => folders.reduce((acc, f) => acc + Number(f.documentCount || 0), 0),
-    [folders],
+  const folderCount = folders.length
+
+  const selectedCount = useMemo(
+    () => Number(folderInfo?.documentCount || folders.find((f) => f.id === selectedFolderId)?.documentCount || 0),
+    [folderInfo, folders, selectedFolderId],
   )
 
   return (
     <section>
       <PageHeader
         title="폴더 관리"
-        description="Figma 기준 폴더 운영 레이아웃"
-        actions={<Link className="btn secondary" to="/archive/documents">문서관리로 이동</Link>}
+        description="폴더 생성/수정/삭제 전용 화면"
+        actions={<button className="btn primary" type="button" onClick={onStartCreate}>＋ 새 폴더</button>}
       />
+
       <Toast type={notice.type} message={notice.message} />
+      {error && <p className="coming-alert">{error}</p>}
 
-      <div className="folder-manage-topstats">
-        <article className="folder-stat-card">
-          <p>전체 폴더</p>
-          <strong>{folders.length}</strong>
-        </article>
-        <article className="folder-stat-card">
-          <p>전체 문서</p>
-          <strong>{totalDocs}</strong>
-        </article>
-        <article className="folder-stat-card">
-          <p>선택 폴더</p>
-          <strong>{folderInfo?.name || '-'}</strong>
-        </article>
-      </div>
+      <div className="folder-explorer-grid">
+        <aside className="panel folder-nav-panel">
+          <h2 className="folder-nav-title">📁 전체 폴더 ({folderCount})</h2>
 
-      <div className="folder-manage-grid figma-style">
-        <article className="panel folder-left-panel">
-          <div className="title-row folder-section-head">
-            <h2>📁 폴더 목록</h2>
-            {loading && <span className="muted">불러오는 중...</span>}
-          </div>
-          {error && <p className="coming-alert">{error}</p>}
-
-          <div className="folder-list modern">
-            {folders.length === 0 ? (
+          <div className="folder-list modern folder-nav-list">
+            {loading && <p className="muted">불러오는 중...</p>}
+            {!loading && folders.length === 0 ? (
               <div className="empty-state">생성된 폴더가 없습니다.</div>
             ) : folders.map((f) => (
-              <button key={f.id} className={`folder-btn folder-modern-btn ${selectedFolderId === f.id ? 'active' : ''}`} onClick={() => setSelectedFolderId(f.id)} type="button">
-                <span className="folder-modern-head">
-                  <span className="folder-dot" style={{ backgroundColor: f.color || '#f59e0b' }} />
+              <button
+                key={f.id}
+                className={`folder-btn folder-nav-item ${selectedFolderId === f.id ? 'active' : ''}`}
+                onClick={() => onSelectFolder(f.id)}
+                type="button"
+              >
+                <div className="folder-nav-item-top">
+                  <span className="folder-icon-badge" style={{ color: f.color || '#5B7FF3' }}>📁</span>
                   <b>{f.name}</b>
-                  <small>{f.documentCount ?? 0}건</small>
-                </span>
-                <small>{f.description || '설명 없음'}</small>
+                  <small>{f.documentCount ?? 0}개</small>
+                </div>
+                <p>{f.description || '설명 없음'}</p>
+                <span className="folder-created">생성일: {formatDateOnly(f.createdAt)}</span>
               </button>
             ))}
           </div>
-        </article>
+        </aside>
 
-        <article className="panel folder-right-panel">
-          <div className="folder-selected-summary">
-            <span className="summary-label">현재 선택 폴더</span>
-            <strong>{folderInfo?.name || '선택 없음'}</strong>
-            <small>{folderInfo?.description || '왼쪽 목록에서 폴더를 선택하면 상세 편집이 가능합니다.'}</small>
-          </div>
-
-          <div className="folder-form-grid">
-            <div className="form-card folder-form-card">
-              <div className="title-row">
-                <b>새 폴더 생성</b>
-                <span className="muted">필수: 폴더명</span>
-              </div>
-              <input placeholder="폴더명" value={createForm.name} onChange={(e) => setCreateForm((v) => ({ ...v, name: e.target.value }))} />
-              <input placeholder="설명" value={createForm.description} onChange={(e) => setCreateForm((v) => ({ ...v, description: e.target.value }))} />
-              <div className="folder-color-row">
-                <span className="muted">색상</span>
-                <input type="color" value={createForm.color} onChange={(e) => setCreateForm((v) => ({ ...v, color: e.target.value }))} />
-              </div>
-              <button className="btn primary folder-submit-btn" type="button" onClick={onCreateFolder}>폴더 생성</button>
+        <article className="panel folder-detail-panel">
+          {mode === 'empty' && (
+            <div className="folder-empty-pane">
+              <div className="folder-empty-icon">📁</div>
+              <h3>폴더를 선택해주세요</h3>
+              <p>좌측 목록에서 폴더를 선택하면 상세 정보를 확인할 수 있습니다</p>
             </div>
+          )}
 
-            {folderInfo ? (
-              <div className="form-card folder-form-card">
-                <div className="title-row">
-                  <b>선택 폴더 수정</b>
-                  <button className="btn secondary btn-sm" type="button" onClick={onStartEditFolder}>정보 불러오기</button>
+          {mode === 'detail' && folderInfo && (
+            <div className="folder-detail-wrap">
+              <div className="folder-detail-head">
+                <div className="folder-detail-title">
+                  <span className="folder-icon-badge large" style={{ color: folderInfo.color || '#5B7FF3' }}>📁</span>
+                  <div>
+                    <h3>{folderInfo.name}</h3>
+                    <p>{folderInfo.description || '설명 없음'}</p>
+                  </div>
                 </div>
-                <input placeholder="폴더명" value={editForm.name} onChange={(e) => setEditForm((v) => ({ ...v, name: e.target.value }))} />
-                <input placeholder="설명" value={editForm.description} onChange={(e) => setEditForm((v) => ({ ...v, description: e.target.value }))} />
-                <div className="folder-color-row">
-                  <span className="muted">색상</span>
-                  <input type="color" value={editForm.color} onChange={(e) => setEditForm((v) => ({ ...v, color: e.target.value }))} />
+                <button className="folder-close-btn" type="button" onClick={onCloseRightPane}>×</button>
+              </div>
+
+              <div className="folder-detail-stats">
+                <div className="folder-mini-stat">
+                  <span>문서 수</span>
+                  <strong>{selectedCount}개</strong>
                 </div>
-                <div className="actions folder-edit-actions">
-                  <button className="btn secondary" type="button" onClick={onSaveEditFolder}>저장</button>
-                  <button className="btn danger" type="button" onClick={onDeleteFolder}>삭제</button>
+                <div className="folder-mini-stat">
+                  <span>생성일</span>
+                  <strong>{formatDateOnly(folderInfo.createdAt)}</strong>
                 </div>
               </div>
-            ) : (
-              <div className="empty-state">수정할 폴더를 왼쪽에서 선택해 주세요.</div>
-            )}
-          </div>
+
+              <div className="folder-setting-area">
+                <h4>폴더 설정</h4>
+                <button className="btn secondary folder-full-btn" type="button" onClick={onStartEdit}>✎ 폴더 수정</button>
+                <button className="btn danger folder-full-btn soft" type="button" onClick={onDeleteFolder}>🗑 폴더 삭제</button>
+                <div className="folder-warn-box">⚠ 이 폴더에는 {selectedCount}개의 문서가 있습니다. 삭제 시 모든 문서도 함께 삭제됩니다.</div>
+              </div>
+            </div>
+          )}
+
+          {(mode === 'edit' || mode === 'create') && (
+            <div className="folder-edit-pane">
+              <div className="folder-edit-head">
+                <h3>{mode === 'create' ? '새 폴더' : '폴더 수정'}</h3>
+                <button className="folder-close-btn" type="button" onClick={mode === 'create' ? onCloseRightPane : () => setMode('detail')}>×</button>
+              </div>
+
+              <label className="folder-field-label">폴더 이름 *</label>
+              <input
+                value={form.name}
+                onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))}
+                placeholder="폴더 이름을 입력하세요"
+              />
+
+              <label className="folder-field-label">설명</label>
+              <textarea
+                rows={4}
+                value={form.description}
+                onChange={(e) => setForm((prev) => ({ ...prev, description: e.target.value }))}
+                placeholder="폴더 설명"
+              />
+
+              <label className="folder-field-label">폴더 색상</label>
+              <div className="folder-color-presets">
+                {COLOR_PRESETS.map((c) => (
+                  <button
+                    key={c}
+                    type="button"
+                    className={`color-chip ${form.color === c ? 'active' : ''}`}
+                    style={{ backgroundColor: c }}
+                    onClick={() => setForm((prev) => ({ ...prev, color: c }))}
+                    aria-label={`색상 ${c}`}
+                  >
+                    {form.color === c ? '✓' : ''}
+                  </button>
+                ))}
+              </div>
+
+              <div className="folder-color-manual">
+                <input type="color" value={form.color} onChange={(e) => setForm((prev) => ({ ...prev, color: e.target.value }))} />
+                <span>또는 직접 색상 선택</span>
+              </div>
+
+              <div className="actions folder-edit-actions">
+                <button className="btn primary folder-save-btn" type="button" onClick={mode === 'create' ? onSaveCreate : onSaveEdit}>✓ 저장</button>
+                <button className="btn secondary" type="button" onClick={mode === 'create' ? onCloseRightPane : () => setMode('detail')}>취소</button>
+              </div>
+            </div>
+          )}
         </article>
       </div>
     </section>
