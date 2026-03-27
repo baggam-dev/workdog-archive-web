@@ -15,7 +15,7 @@ export default function ActionMenu({ onDetail, onDelete }) {
 
   return (
     <div className="action-menu" ref={rootRef}>
-      <button className="icon-btn" type="button" aria-label="행 액션 열기" onClick={() => setOpen((v) => !v)}>⋯</button>
+      <button className="icon-btn dots" type="button" aria-label="행 액션 열기" onClick={() => setOpen((v) => !v)}>⋮</button>
       {open && (
         <div className="action-menu-popover" role="menu">
           <button className="menu-item" type="button" onClick={() => { setOpen(false); onDetail?.() }}>상세 보기</button>

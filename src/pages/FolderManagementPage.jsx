@@ -1,15 +1,8 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { apiClient } from '../lib/apiClient'
 import PageHeader from '../components/common/PageHeader'
 import Toast from '../components/common/Toast'
-import FolderSidebar from '../components/folders/FolderSidebar'
-
-function statusState(loading, error, length) {
-  if (loading) return { cls: 'loading', msg: '데이터를 불러오는 중...' }
-  if (error) return { cls: 'error', msg: `로드 실패: ${error}` }
-  if (length === 0) return { cls: '', msg: '데이터가 없습니다.' }
-  return { cls: '', msg: `총 ${length}건 표시 중` }
-}
 
 export default function FolderManagementPage() {
   const [loading, setLoading] = useState(true)
@@ -63,9 +56,7 @@ export default function FolderManagementPage() {
         if (mounted) setLoading(false)
       }
     })()
-    return () => {
-      mounted = false
-    }
+    return () => { mounted = false }
   }, [])
 
   useEffect(() => {
@@ -79,9 +70,7 @@ export default function FolderManagementPage() {
         if (mounted) setFolderInfo(null)
       }
     })()
-    return () => {
-      mounted = false
-    }
+    return () => { mounted = false }
   }, [selectedFolderId])
 
   const onCreateFolder = async () => {
@@ -141,40 +130,51 @@ export default function FolderManagementPage() {
 
   return (
     <section>
-      <PageHeader title="폴더 관리" description="폴더 생성/수정/삭제 전용 화면" />
+      <PageHeader title="폴더 관리" description="폴더 생성/수정/삭제를 관리하는 화면" actions={<Link className="btn secondary" to="/archive/documents">문서 관리로 이동</Link>} />
       <Toast type={notice.type} message={notice.message} />
 
-      <div className="grid2" style={{ gridTemplateColumns: '360px 1fr' }}>
-        <FolderSidebar
-          loading={loading}
-          error={error}
-          folders={folders}
-          selectedFolderId={selectedFolderId}
-          setSelectedFolderId={setSelectedFolderId}
-          createForm={createForm}
-          setCreateForm={setCreateForm}
-          onCreateFolder={onCreateFolder}
-          folderInfo={folderInfo}
-          editForm={editForm}
-          setEditForm={setEditForm}
-          onStartEditFolder={onStartEditFolder}
-          onSaveEditFolder={onSaveEditFolder}
-          onDeleteFolder={onDeleteFolder}
-          statusMessage={statusState(loading, error, folders.length).msg}
-        />
+      <div className="folder-manage-grid">
+        <article className="panel">
+          <h2>폴더 목록</h2>
+          {loading && <p className="muted">불러오는 중...</p>}
+          {error && <p className="coming-alert">{error}</p>}
+          <div className="folder-list modern">
+            {folders.map((f) => (
+              <button key={f.id} className={`folder-btn ${selectedFolderId === f.id ? 'active' : ''}`} onClick={() => setSelectedFolderId(f.id)} type="button">
+                <span>{f.name}</span>
+                <small>{f.description || '-'}</small>
+              </button>
+            ))}
+          </div>
+        </article>
 
         <article className="panel">
-          <h2>안내</h2>
-          <p className="muted">문서 작업은 좌측 메뉴의 "문서 관리" 화면에서 진행하세요.</p>
+          <h2>폴더 설정</h2>
+
+          <div className="form-card">
+            <b>새 폴더 생성</b>
+            <input placeholder="폴더명" value={createForm.name} onChange={(e) => setCreateForm((v) => ({ ...v, name: e.target.value }))} />
+            <input placeholder="설명" value={createForm.description} onChange={(e) => setCreateForm((v) => ({ ...v, description: e.target.value }))} />
+            <input type="color" value={createForm.color} onChange={(e) => setCreateForm((v) => ({ ...v, color: e.target.value }))} />
+            <button className="btn primary" type="button" onClick={onCreateFolder}>생성</button>
+          </div>
+
           {folderInfo ? (
-            <div className="form-card" style={{ maxWidth: 520 }}>
-              <b>선택 폴더 정보</b>
-              <div>이름: {folderInfo.name}</div>
-              <div>설명: {folderInfo.description || '-'}</div>
-              <div>색상: <span style={{ display: 'inline-block', width: 14, height: 14, borderRadius: 3, background: folderInfo.color || '#f59e0b', verticalAlign: 'middle' }} /></div>
+            <div className="form-card">
+              <div className="title-row">
+                <b>선택 폴더 편집</b>
+                <button className="btn secondary btn-sm" type="button" onClick={onStartEditFolder}>불러오기</button>
+              </div>
+              <input placeholder="폴더명" value={editForm.name} onChange={(e) => setEditForm((v) => ({ ...v, name: e.target.value }))} />
+              <input placeholder="설명" value={editForm.description} onChange={(e) => setEditForm((v) => ({ ...v, description: e.target.value }))} />
+              <input type="color" value={editForm.color} onChange={(e) => setEditForm((v) => ({ ...v, color: e.target.value }))} />
+              <div className="actions">
+                <button className="btn secondary" type="button" onClick={onSaveEditFolder}>저장</button>
+                <button className="btn danger" type="button" onClick={onDeleteFolder}>삭제</button>
+              </div>
             </div>
           ) : (
-            <p className="muted">폴더를 선택해 주세요.</p>
+            <p className="muted">편집할 폴더를 선택해 주세요.</p>
           )}
         </article>
       </div>

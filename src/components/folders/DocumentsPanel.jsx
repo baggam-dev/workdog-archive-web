@@ -43,6 +43,11 @@ export default function DocumentsPanel({
       <h2>문서</h2>
       <InlineState cls={state.cls} message={state.msg} />
 
+      <div className="folder-selector-head">
+        <div className="folder-pick-label"><span className="nav-item-icon" aria-hidden="true">◫</span> 폴더 선택</div>
+        <Link className="btn secondary btn-sm" to="/archive/folders"><span className="nav-item-icon" aria-hidden="true">⚙</span> 폴더 관리</Link>
+      </div>
+
       <div className="folder-selector">
         <div className="folder-tabs">
           {folders.map((f) => (
@@ -58,10 +63,7 @@ export default function DocumentsPanel({
             </button>
           ))}
         </div>
-        <Link className="btn secondary" to="/archive/folders">폴더 관리</Link>
       </div>
-
-      {folderInfo && <div className="meta-line">현재 폴더: <b>{folderInfo.name}</b></div>}
 
       <FilterBar
         filter={filter}

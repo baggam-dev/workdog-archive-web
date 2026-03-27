@@ -4,7 +4,6 @@ import AppLayout from './components/layouts/AppLayout'
 import PortalHomePage from './pages/PortalHomePage'
 import HomePage from './pages/HomePage'
 import FoldersPage from './pages/FoldersPage'
-import DocsPage from './pages/DocsPage'
 import FolderManagementPage from './pages/FolderManagementPage'
 import StudentsDashboardPage from './pages/StudentsDashboardPage'
 import ComingSoonPage from './pages/ComingSoonPage'
@@ -44,7 +43,7 @@ function App() {
           path="/archive/status"
           element={(
             <AppLayout appName="Workdog-Archive">
-              <DocsPage />
+              <ComingSoonPage title="상태" description="피그마 기준 공사중 안내 화면입니다." />
             </AppLayout>
           )}
         />

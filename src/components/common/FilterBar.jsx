@@ -21,8 +21,8 @@ export default function FilterBar({
   defaultFilter,
 }) {
   return (
-    <div className="filter-container">
-      <div className="filter-search">
+    <div className="filter-inline-row">
+      <div className="filter-search compact">
         <InlineIcon type="search" />
         <input
           placeholder="문서 제목 검색..."
@@ -31,7 +31,7 @@ export default function FilterBar({
         />
       </div>
 
-      <div className="filter-options">
+      <div className="filter-options inline">
         <select value={filter.category} onChange={(e) => setFilter((v) => ({ ...v, category: e.target.value }))}>
           <option value="">카테고리 전체</option>
           {categories.map((c) => <option value={c} key={c}>{c}</option>)}
@@ -48,7 +48,7 @@ export default function FilterBar({
         </label>
 
         <button className="btn ghost btn-sm" type="button" onClick={() => setFilter(defaultFilter)}>
-          <InlineIcon type="close" /> 필터 초기화
+          <InlineIcon type="close" /> 초기화
         </button>
       </div>
     </div>
