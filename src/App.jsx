@@ -43,13 +43,13 @@ function App() {
           path="/archive/status"
           element={(
             <AppLayout appName="Workdog-Archive">
-              <ComingSoonPage title="상태" description="피그마 기준 공사중 안내 화면입니다." />
+              <ComingSoonPage title="상태" />
             </AppLayout>
           )}
         />
 
         <Route path="/students" element={<StudentsDashboardPage />} />
-        <Route path="/apps" element={<ComingSoonPage title="추후 추가 앱" description="피그마 기준 준비중 페이지를 먼저 반영했습니다." />} />
+        <Route path="/apps" element={<ComingSoonPage title="추후 추가 앱" />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </PortalLayout>
