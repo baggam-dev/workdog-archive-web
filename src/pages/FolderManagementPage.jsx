@@ -228,8 +228,6 @@ export default function FolderManagementPage() {
                   <b>{f.name}</b>
                   <small>{f.documentCount ?? 0}개</small>
                 </div>
-                <p>{f.description || '설명 없음'}</p>
-                <span className="folder-created">생성일: {formatDateOnly(f.createdAt)}</span>
               </button>
             ))}
           </div>

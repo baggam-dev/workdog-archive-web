@@ -89,9 +89,18 @@ export default function FoldersPage() {
 
   const refreshFolders = async () => {
     const fs = await apiClient.folders()
-    setFolders(Array.isArray(fs) ? fs : [])
-    if (!selectedFolderId && fs?.length) setSelectedFolderId(fs[0].id)
-    if (selectedFolderId && !fs.some((f) => f.id === selectedFolderId)) setSelectedFolderId(fs[0]?.id || '')
+    const base = Array.isArray(fs) ? fs : []
+    const withCounts = await Promise.all(base.map(async (f) => {
+      try {
+        const list = await apiClient.folderDocuments(f.id)
+        return { ...f, documentCount: Array.isArray(list) ? list.length : Number(f.documentCount || 0) }
+      } catch {
+        return { ...f, documentCount: Number(f.documentCount || 0) }
+      }
+    }))
+    setFolders(withCounts)
+    if (!selectedFolderId && withCounts?.length) setSelectedFolderId(withCounts[0].id)
+    if (selectedFolderId && !withCounts.some((f) => f.id === selectedFolderId)) setSelectedFolderId(withCounts[0]?.id || '')
   }
 
   const refreshDocs = async (folderId) => {
@@ -244,9 +253,15 @@ export default function FoldersPage() {
     }
   }
 
-  const onOpenDetail = (doc) => {
-    setActiveDoc(doc)
-    setMemoText(doc.memo || '')
+  const onOpenDetail = async (doc) => {
+    try {
+      const detail = await apiClient.document(doc.id)
+      setActiveDoc(detail || doc)
+      setMemoText((detail || doc).memo || '')
+    } catch {
+      setActiveDoc(doc)
+      setMemoText(doc.memo || '')
+    }
   }
 
   const onSaveMemo = async () => {

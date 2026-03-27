@@ -1,3 +1,4 @@
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import FilterBar from '../common/FilterBar'
 import DataTable from '../common/DataTable'
@@ -6,9 +7,20 @@ import SummaryStat from '../common/SummaryStat'
 import EmptyState from '../common/EmptyState'
 import ActionMenu from '../common/ActionMenu'
 
+function pickFullText(doc) {
+  return (
+    doc?.fullText
+    || doc?.content
+    || doc?.body
+    || doc?.text
+    || doc?.extractedText
+    || doc?.ocrText
+    || ''
+  )
+}
+
 export default function DocumentsPanel({
   state,
-  folderInfo,
   folders,
   selectedFolderId,
   setSelectedFolderId,
@@ -38,6 +50,13 @@ export default function DocumentsPanel({
   setMemoText,
   onSaveMemo,
 }) {
+  const [fullOpen, setFullOpen] = useState(false)
+  const fullText = useMemo(() => pickFullText(activeDoc), [activeDoc])
+
+  useEffect(() => {
+    setFullOpen(false)
+  }, [activeDoc?.id])
+
   return (
     <article className="panel">
       <h2>문서</h2>
@@ -73,7 +92,7 @@ export default function DocumentsPanel({
         defaultFilter={defaultFilter}
       />
 
-      <div className="summary-grid">
+      <div className="summary-grid compact">
         <SummaryStat label="표시 문서" value={filteredDocs.length} icon="docs" />
         <SummaryStat label="중요 문서" value={filteredDocs.filter((d) => d.isImportant).length} icon="important" />
         <SummaryStat label="선택 문서" value={checkedDocIds.length} icon="selected" />
@@ -177,16 +196,29 @@ export default function DocumentsPanel({
       </div>
 
       {activeDoc && (
-        <div className="detail-box">
-          <div className="title-row">
-            <h2>문서 상세 · {activeDoc.title}</h2>
-            <button className="btn" type="button" onClick={() => setActiveDoc(null)}>닫기</button>
-          </div>
-          <div className="meta">형식: {activeDoc.fileType} · 수정일: {formatKST(activeDoc.uploadedAt)}</div>
-          <div className="meta">요약: {activeDoc.summaryOneLine || '-'}</div>
-          <textarea value={memoText} onChange={(e) => setMemoText(e.target.value)} placeholder="메모를 입력하세요" rows={4} />
-          <div className="actions right-actions">
-            <button className="btn" type="button" onClick={onSaveMemo}>메모 저장</button>
+        <div className="modal-backdrop" onClick={() => setActiveDoc(null)}>
+          <div className="modal doc-detail-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="title-row">
+              <h2>문서 상세 · {activeDoc.title}</h2>
+              <button className="btn" type="button" onClick={() => setActiveDoc(null)}>닫기</button>
+            </div>
+            <div className="meta">형식: {activeDoc.fileType} · 수정일: {formatKST(activeDoc.uploadedAt)}</div>
+            <div className="meta">요약: {activeDoc.summaryOneLine || '-'}</div>
+
+            <button className="btn secondary btn-sm" type="button" onClick={() => setFullOpen((v) => !v)}>
+              {fullOpen ? '전체내용 접기' : '전체내용 보기'}
+            </button>
+
+            {fullOpen && (
+              <article className="doc-fulltext-box">
+                <pre>{fullText || '문서 전체내용이 아직 없습니다.'}</pre>
+              </article>
+            )}
+
+            <textarea value={memoText} onChange={(e) => setMemoText(e.target.value)} placeholder="메모를 입력하세요" rows={4} />
+            <div className="actions right-actions">
+              <button className="btn" type="button" onClick={onSaveMemo}>메모 저장</button>
+            </div>
           </div>
         </div>
       )}
