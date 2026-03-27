@@ -227,16 +227,28 @@ input[type="checkbox"]:checked::after {
 
 .folder-manage-grid { display:grid; grid-template-columns: 360px 1fr; gap:var(--space-6); align-items:start; }
 .folder-manage-grid.figma-style .panel { padding:var(--space-4); }
-.folder-left-panel { min-height: 520px; }
+.folder-left-panel,
 .folder-right-panel { min-height: 520px; }
+.folder-section-head { margin-bottom:10px; }
 .folder-list.modern { max-height: 60vh; }
-.folder-modern-btn { border-radius:12px; padding:12px; }
+.folder-modern-btn { border-radius:12px; padding:12px; border-color:var(--line-soft); }
+.folder-modern-btn:hover { border-color:var(--line-strong); background:var(--bg-subtle); }
+.folder-modern-btn.active { border-color:var(--brand-500); box-shadow:0 0 0 3px var(--brand-100); }
 .folder-modern-head { display:flex; align-items:center; gap:8px; }
 .folder-modern-head b { font-size:var(--fs-14); font-weight:600; color:var(--text-strong); }
 .folder-modern-head small { margin-left:auto; color:var(--text-tertiary); font-size:var(--fs-12); }
 .folder-dot { width:10px; height:10px; border-radius:999px; box-shadow:0 0 0 2px rgba(255,255,255,.8); }
-.folder-form-grid { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:var(--space-4); align-items:start; }
-.folder-form-card { margin-bottom:0; }
+
+.folder-selected-summary { border:1px solid var(--line-soft); border-radius:12px; padding:12px 14px; background:#f8fafc; display:grid; gap:4px; margin-bottom:var(--space-3); }
+.folder-selected-summary .summary-label { font-size:var(--fs-12); color:var(--text-tertiary); font-weight:600; }
+.folder-selected-summary strong { font-size:var(--fs-18); color:var(--text-strong); line-height:1.3; }
+.folder-selected-summary small { color:var(--text-secondary); font-size:var(--fs-12); }
+
+.folder-form-grid { display:grid; grid-template-columns:1fr; gap:var(--space-3); align-items:start; }
+.folder-form-card { margin-bottom:0; background:#fcfdff; border-color:var(--line-soft); }
+.folder-form-card b { font-size:var(--fs-15); }
+.folder-submit-btn { width:100%; justify-content:center; }
+.folder-edit-actions { justify-content:flex-end; }
 .folder-color-row { display:flex; align-items:center; justify-content:space-between; }
 .folder-color-row input[type="color"] { width:52px; min-height:36px; padding:2px; border-radius:8px; }
 

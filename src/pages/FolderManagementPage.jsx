@@ -136,7 +136,7 @@ export default function FolderManagementPage() {
   return (
     <section>
       <PageHeader
-        title="폴더관리"
+        title="폴더 관리"
         description="Figma 기준 폴더 운영 레이아웃"
         actions={<Link className="btn secondary" to="/archive/documents">문서관리로 이동</Link>}
       />
@@ -159,7 +159,7 @@ export default function FolderManagementPage() {
 
       <div className="folder-manage-grid figma-style">
         <article className="panel folder-left-panel">
-          <div className="title-row" style={{ marginBottom: 10 }}>
+          <div className="title-row folder-section-head">
             <h2>📁 폴더 목록</h2>
             {loading && <span className="muted">불러오는 중...</span>}
           </div>
@@ -182,6 +182,12 @@ export default function FolderManagementPage() {
         </article>
 
         <article className="panel folder-right-panel">
+          <div className="folder-selected-summary">
+            <span className="summary-label">현재 선택 폴더</span>
+            <strong>{folderInfo?.name || '선택 없음'}</strong>
+            <small>{folderInfo?.description || '왼쪽 목록에서 폴더를 선택하면 상세 편집이 가능합니다.'}</small>
+          </div>
+
           <div className="folder-form-grid">
             <div className="form-card folder-form-card">
               <div className="title-row">
@@ -194,7 +200,7 @@ export default function FolderManagementPage() {
                 <span className="muted">색상</span>
                 <input type="color" value={createForm.color} onChange={(e) => setCreateForm((v) => ({ ...v, color: e.target.value }))} />
               </div>
-              <button className="btn primary" type="button" onClick={onCreateFolder}>폴더 생성</button>
+              <button className="btn primary folder-submit-btn" type="button" onClick={onCreateFolder}>폴더 생성</button>
             </div>
 
             {folderInfo ? (
@@ -209,7 +215,7 @@ export default function FolderManagementPage() {
                   <span className="muted">색상</span>
                   <input type="color" value={editForm.color} onChange={(e) => setEditForm((v) => ({ ...v, color: e.target.value }))} />
                 </div>
-                <div className="actions">
+                <div className="actions folder-edit-actions">
                   <button className="btn secondary" type="button" onClick={onSaveEditFolder}>저장</button>
                   <button className="btn danger" type="button" onClick={onDeleteFolder}>삭제</button>
                 </div>
