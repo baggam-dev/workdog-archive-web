@@ -44,8 +44,8 @@ export default function DocumentsPanel({
       <InlineState cls={state.cls} message={state.msg} />
 
       <div className="folder-selector-head">
-        <div className="folder-pick-label"><span className="nav-item-icon" aria-hidden="true">◫</span> 폴더 선택</div>
-        <Link className="btn secondary btn-sm" to="/archive/folders"><span className="nav-item-icon" aria-hidden="true">⚙</span> 폴더 관리</Link>
+        <div className="folder-pick-label"><span className="nav-item-icon" aria-hidden="true">📁</span> 폴더 선택</div>
+        <Link className="btn secondary btn-sm" to="/archive/folders"><span className="nav-item-icon" aria-hidden="true">⚙</span> 폴더관리</Link>
       </div>
 
       <div className="folder-selector">
@@ -140,7 +140,7 @@ export default function DocumentsPanel({
             <td className="ellipsis" title={String(d.fileType || '').toUpperCase()}>{String(d.fileType || '').toUpperCase()}</td>
             <td className="ellipsis" title={d.category || '기타'}>{d.category || '기타'}</td>
             <td title={formatKST(d.uploadedAt)}>{formatKSTDateOnly(d.uploadedAt)}</td>
-            <td>
+            <td className="action-cell">
               <ActionMenu onDetail={() => onOpenDetail(d)} onDelete={() => onDeleteOne(d.id)} />
             </td>
           </tr>

@@ -50,8 +50,8 @@ function formatKSTDateOnly(iso) {
 function statusState(loading, error, length) {
   if (loading) return { cls: 'loading', msg: '데이터를 불러오는 중...' }
   if (error) return { cls: 'error', msg: `로드 실패: ${error}` }
-  if (length === 0) return { cls: '', msg: '데이터가 없습니다.' }
-  return { cls: '', msg: `총 ${length}건 표시 중` }
+  if (length === 0) return { cls: '', msg: '' }
+  return { cls: '', msg: '' }
 }
 
 export default function FoldersPage() {

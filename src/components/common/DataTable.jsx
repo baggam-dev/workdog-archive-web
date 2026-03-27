@@ -25,7 +25,7 @@ export default function DataTable({
             <th><button className="th-btn" onClick={() => setSortKey('fileType')}>형식 {sortMark('fileType')}</button></th>
             <th><button className="th-btn" onClick={() => setSortKey('category')}>카테고리 {sortMark('category')}</button></th>
             <th><button className="th-btn" onClick={() => setSortKey('uploadedAt')}>수정일 {sortMark('uploadedAt')}</button></th>
-            <th>액션</th>
+            <th className="action-head">액션</th>
           </tr>
         </thead>
         <tbody>{rows}</tbody>
