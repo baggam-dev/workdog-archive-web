@@ -6,16 +6,9 @@ import HomePage from './pages/HomePage'
 import FoldersPage from './pages/FoldersPage'
 import DocsPage from './pages/DocsPage'
 import FolderManagementPage from './pages/FolderManagementPage'
+import StudentsDashboardPage from './pages/StudentsDashboardPage'
+import ComingSoonPage from './pages/ComingSoonPage'
 import './App.css'
-
-function PlaceholderPage({ title, desc }) {
-  return (
-    <section>
-      <h1>{title}</h1>
-      <p className="muted">{desc}</p>
-    </section>
-  )
-}
 
 function App() {
   return (
@@ -56,8 +49,8 @@ function App() {
           )}
         />
 
-        <Route path="/students" element={<PlaceholderPage title="학생관리" desc="포탈 구조만 선반영된 준비중 화면입니다." />} />
-        <Route path="/apps" element={<PlaceholderPage title="추후 앱" desc="여기에 신규 업무 앱이 순차적으로 추가됩니다." />} />
+        <Route path="/students" element={<StudentsDashboardPage />} />
+        <Route path="/apps" element={<ComingSoonPage title="추후 추가 앱" description="피그마 기준 준비중 페이지를 먼저 반영했습니다." />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </PortalLayout>
