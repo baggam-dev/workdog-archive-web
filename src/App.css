@@ -219,8 +219,25 @@ input[type="checkbox"]:checked::after {
 .mock-toolbar { display:flex; justify-content:space-between; gap:var(--space-3); align-items:center; flex-wrap:wrap; }
 .mock-input { min-height:44px; display:flex; align-items:center; border:1px solid var(--line-default); border-radius:var(--radius-md); padding:0 12px; color:var(--text-secondary); min-width:280px; background:var(--bg-surface); }
 
+.folder-manage-topstats { display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:var(--space-4); margin-bottom:var(--space-4); }
+.folder-stat-card { border:1px solid var(--line-soft); border-radius:var(--radius-lg); background:var(--bg-surface); padding:14px 16px; box-shadow:0 1px 3px rgba(0,0,0,.04); }
+.folder-stat-card p { margin:0 0 6px; font-size:var(--fs-13); color:var(--text-secondary); }
+.folder-stat-card strong { font-size:var(--fs-20); color:var(--text-strong); }
+
 .folder-manage-grid { display:grid; grid-template-columns: 360px 1fr; gap:var(--space-6); align-items:start; }
+.folder-manage-grid.figma-style .panel { padding:var(--space-4); }
+.folder-left-panel { min-height: 520px; }
+.folder-right-panel { min-height: 520px; }
 .folder-list.modern { max-height: 60vh; }
+.folder-modern-btn { border-radius:12px; padding:12px; }
+.folder-modern-head { display:flex; align-items:center; gap:8px; }
+.folder-modern-head b { font-size:var(--fs-14); font-weight:600; color:var(--text-strong); }
+.folder-modern-head small { margin-left:auto; color:var(--text-tertiary); font-size:var(--fs-12); }
+.folder-dot { width:10px; height:10px; border-radius:999px; box-shadow:0 0 0 2px rgba(255,255,255,.8); }
+.folder-form-grid { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:var(--space-4); align-items:start; }
+.folder-form-card { margin-bottom:0; }
+.folder-color-row { display:flex; align-items:center; justify-content:space-between; }
+.folder-color-row input[type="color"] { width:52px; min-height:36px; padding:2px; border-radius:8px; }
 
 @media (max-width: 768px) {
   .portal-header { height:auto; gap:var(--space-2); padding:var(--space-3); flex-direction:column; align-items:flex-start; }
@@ -239,5 +256,7 @@ input[type="checkbox"]:checked::after {
   .summary-grid { grid-template-columns:1fr; }
   .mock-grid-3 { grid-template-columns:1fr; }
   .mock-input { min-width:0; width:100%; }
+  .folder-manage-topstats { grid-template-columns:1fr; }
   .folder-manage-grid { grid-template-columns:1fr; }
+  .folder-form-grid { grid-template-columns:1fr; }
 }

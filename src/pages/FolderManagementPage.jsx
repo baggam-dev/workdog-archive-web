@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { apiClient } from '../lib/apiClient'
 import PageHeader from '../components/common/PageHeader'
@@ -128,54 +128,96 @@ export default function FolderManagementPage() {
     }
   }
 
+  const totalDocs = useMemo(
+    () => folders.reduce((acc, f) => acc + Number(f.documentCount || 0), 0),
+    [folders],
+  )
+
   return (
     <section>
-      <PageHeader title="폴더 관리" description="폴더 생성/수정/삭제를 관리하는 화면" actions={<Link className="btn secondary" to="/archive/documents">문서 관리로 이동</Link>} />
+      <PageHeader
+        title="폴더관리"
+        description="Figma 기준 폴더 운영 레이아웃"
+        actions={<Link className="btn secondary" to="/archive/documents">문서관리로 이동</Link>}
+      />
       <Toast type={notice.type} message={notice.message} />
 
-      <div className="folder-manage-grid">
-        <article className="panel">
-          <h2>폴더 목록</h2>
-          {loading && <p className="muted">불러오는 중...</p>}
+      <div className="folder-manage-topstats">
+        <article className="folder-stat-card">
+          <p>전체 폴더</p>
+          <strong>{folders.length}</strong>
+        </article>
+        <article className="folder-stat-card">
+          <p>전체 문서</p>
+          <strong>{totalDocs}</strong>
+        </article>
+        <article className="folder-stat-card">
+          <p>선택 폴더</p>
+          <strong>{folderInfo?.name || '-'}</strong>
+        </article>
+      </div>
+
+      <div className="folder-manage-grid figma-style">
+        <article className="panel folder-left-panel">
+          <div className="title-row" style={{ marginBottom: 10 }}>
+            <h2>📁 폴더 목록</h2>
+            {loading && <span className="muted">불러오는 중...</span>}
+          </div>
           {error && <p className="coming-alert">{error}</p>}
+
           <div className="folder-list modern">
-            {folders.map((f) => (
-              <button key={f.id} className={`folder-btn ${selectedFolderId === f.id ? 'active' : ''}`} onClick={() => setSelectedFolderId(f.id)} type="button">
-                <span>{f.name}</span>
-                <small>{f.description || '-'}</small>
+            {folders.length === 0 ? (
+              <div className="empty-state">생성된 폴더가 없습니다.</div>
+            ) : folders.map((f) => (
+              <button key={f.id} className={`folder-btn folder-modern-btn ${selectedFolderId === f.id ? 'active' : ''}`} onClick={() => setSelectedFolderId(f.id)} type="button">
+                <span className="folder-modern-head">
+                  <span className="folder-dot" style={{ backgroundColor: f.color || '#f59e0b' }} />
+                  <b>{f.name}</b>
+                  <small>{f.documentCount ?? 0}건</small>
+                </span>
+                <small>{f.description || '설명 없음'}</small>
               </button>
             ))}
           </div>
         </article>
 
-        <article className="panel">
-          <h2>폴더 설정</h2>
-
-          <div className="form-card">
-            <b>새 폴더 생성</b>
-            <input placeholder="폴더명" value={createForm.name} onChange={(e) => setCreateForm((v) => ({ ...v, name: e.target.value }))} />
-            <input placeholder="설명" value={createForm.description} onChange={(e) => setCreateForm((v) => ({ ...v, description: e.target.value }))} />
-            <input type="color" value={createForm.color} onChange={(e) => setCreateForm((v) => ({ ...v, color: e.target.value }))} />
-            <button className="btn primary" type="button" onClick={onCreateFolder}>생성</button>
-          </div>
-
-          {folderInfo ? (
-            <div className="form-card">
+        <article className="panel folder-right-panel">
+          <div className="folder-form-grid">
+            <div className="form-card folder-form-card">
               <div className="title-row">
-                <b>선택 폴더 편집</b>
-                <button className="btn secondary btn-sm" type="button" onClick={onStartEditFolder}>불러오기</button>
+                <b>새 폴더 생성</b>
+                <span className="muted">필수: 폴더명</span>
               </div>
-              <input placeholder="폴더명" value={editForm.name} onChange={(e) => setEditForm((v) => ({ ...v, name: e.target.value }))} />
-              <input placeholder="설명" value={editForm.description} onChange={(e) => setEditForm((v) => ({ ...v, description: e.target.value }))} />
-              <input type="color" value={editForm.color} onChange={(e) => setEditForm((v) => ({ ...v, color: e.target.value }))} />
-              <div className="actions">
-                <button className="btn secondary" type="button" onClick={onSaveEditFolder}>저장</button>
-                <button className="btn danger" type="button" onClick={onDeleteFolder}>삭제</button>
+              <input placeholder="폴더명" value={createForm.name} onChange={(e) => setCreateForm((v) => ({ ...v, name: e.target.value }))} />
+              <input placeholder="설명" value={createForm.description} onChange={(e) => setCreateForm((v) => ({ ...v, description: e.target.value }))} />
+              <div className="folder-color-row">
+                <span className="muted">색상</span>
+                <input type="color" value={createForm.color} onChange={(e) => setCreateForm((v) => ({ ...v, color: e.target.value }))} />
               </div>
+              <button className="btn primary" type="button" onClick={onCreateFolder}>폴더 생성</button>
             </div>
-          ) : (
-            <p className="muted">편집할 폴더를 선택해 주세요.</p>
-          )}
+
+            {folderInfo ? (
+              <div className="form-card folder-form-card">
+                <div className="title-row">
+                  <b>선택 폴더 수정</b>
+                  <button className="btn secondary btn-sm" type="button" onClick={onStartEditFolder}>정보 불러오기</button>
+                </div>
+                <input placeholder="폴더명" value={editForm.name} onChange={(e) => setEditForm((v) => ({ ...v, name: e.target.value }))} />
+                <input placeholder="설명" value={editForm.description} onChange={(e) => setEditForm((v) => ({ ...v, description: e.target.value }))} />
+                <div className="folder-color-row">
+                  <span className="muted">색상</span>
+                  <input type="color" value={editForm.color} onChange={(e) => setEditForm((v) => ({ ...v, color: e.target.value }))} />
+                </div>
+                <div className="actions">
+                  <button className="btn secondary" type="button" onClick={onSaveEditFolder}>저장</button>
+                  <button className="btn danger" type="button" onClick={onDeleteFolder}>삭제</button>
+                </div>
+              </div>
+            ) : (
+              <div className="empty-state">수정할 폴더를 왼쪽에서 선택해 주세요.</div>
+            )}
+          </div>
         </article>
       </div>
     </section>
