@@ -82,9 +82,4 @@ export const apiClient = {
     form.append('file', file)
     return request(`/api/folders/${folderId}/documents`, { method: 'POST', body: form })
   },
-
-  tasks: ({ status } = {}) => request(`/tasks${status ? `?status=${encodeURIComponent(status)}` : ''}`),
-  task: (id) => request(`/tasks/${id}`),
-  taskSummary: () => request('/tasks/summary'),
-  retryTask: (id) => request(`/tasks/${id}/retry`, { method: 'POST' }),
 }
