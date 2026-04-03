@@ -82,4 +82,6 @@ export const apiClient = {
     form.append('file', file)
     return request(`/api/folders/${folderId}/documents`, { method: 'POST', body: form })
   },
+
+  taskSummary: () => request('/tasks/summary'),
 }
