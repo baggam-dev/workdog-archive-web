@@ -7,6 +7,7 @@ import FoldersPage from './pages/FoldersPage'
 import FolderManagementPage from './pages/FolderManagementPage'
 import StudentsDashboardPage from './pages/StudentsDashboardPage'
 import ComingSoonPage from './pages/ComingSoonPage'
+import TaskdogPage from './pages/TaskdogPage'
 import './App.css'
 
 function App() {
@@ -43,7 +44,7 @@ function App() {
           path="/archive/status"
           element={(
             <AppLayout appName="Workdog-Archive">
-              <ComingSoonPage title="상태" />
+              <TaskdogPage />
             </AppLayout>
           )}
         />
