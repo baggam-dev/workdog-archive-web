@@ -7,7 +7,15 @@ import FoldersPage from './pages/FoldersPage'
 import FolderManagementPage from './pages/FolderManagementPage'
 import StudentsDashboardPage from './pages/StudentsDashboardPage'
 import ComingSoonPage from './pages/ComingSoonPage'
+import TaskdogMockPage from './pages/TaskdogMockPage'
 import './App.css'
+
+const taskdogNavItems = [
+  { to: '/taskdog', label: '대시보드', icon: 'home', end: true },
+  { to: '/taskdog/tasks', label: '태스크 센터', icon: 'docs' },
+  { to: '/taskdog/runs', label: '실행 이력', icon: 'status' },
+  { disabled: true, label: '알림 설정 (준비중)', icon: 'bolt' },
+]
 
 function App() {
   return (
@@ -44,6 +52,31 @@ function App() {
           element={(
             <AppLayout appName="Workdog-Archive">
               <ComingSoonPage title="상태" />
+            </AppLayout>
+          )}
+        />
+
+        <Route
+          path="/taskdog"
+          element={(
+            <AppLayout appName="Taskdog" navItems={taskdogNavItems}>
+              <TaskdogMockPage />
+            </AppLayout>
+          )}
+        />
+        <Route
+          path="/taskdog/tasks"
+          element={(
+            <AppLayout appName="Taskdog" navItems={taskdogNavItems}>
+              <TaskdogMockPage />
+            </AppLayout>
+          )}
+        />
+        <Route
+          path="/taskdog/runs"
+          element={(
+            <AppLayout appName="Taskdog" navItems={taskdogNavItems}>
+              <TaskdogMockPage />
             </AppLayout>
           )}
         />

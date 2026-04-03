@@ -17,17 +17,26 @@ function NavIcon({ type }) {
   )
 }
 
-export default function AppLayout({ appName, children }) {
+const defaultArchiveNav = [
+  { to: '/archive', label: '대시보드', icon: 'home', end: true },
+  { to: '/archive/documents', label: '문서 관리', icon: 'docs' },
+  { to: '/archive/folders', label: '폴더 관리', icon: 'folder' },
+  { to: '/archive/status', label: '상태', icon: 'status' },
+  { disabled: true, label: '파이프라인 (준비중)', icon: 'bolt' },
+]
+
+export default function AppLayout({ appName, children, navItems = defaultArchiveNav }) {
   return (
     <section className="app-shell">
       <aside className="app-sidenav">
         <h3>{appName}</h3>
         <nav className="app-nav">
-          <NavLink to="/archive" end><NavIcon type="home" /> 대시보드</NavLink>
-          <NavLink to="/archive/documents"><NavIcon type="docs" /> 문서 관리</NavLink>
-          <NavLink to="/archive/folders"><NavIcon type="folder" /> 폴더 관리</NavLink>
-          <NavLink to="/archive/status"><NavIcon type="status" /> 상태</NavLink>
-          <button className="nav-disabled" type="button" disabled><NavIcon type="bolt" /> 파이프라인 (준비중)</button>
+          {navItems.map((item) => {
+            if (item.disabled) {
+              return <button key={item.label} className="nav-disabled" type="button" disabled><NavIcon type={item.icon} /> {item.label}</button>
+            }
+            return <NavLink key={item.to} to={item.to} end={item.end}><NavIcon type={item.icon} /> {item.label}</NavLink>
+          })}
         </nav>
       </aside>
       <div className="app-content">{children}</div>

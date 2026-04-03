@@ -280,7 +280,44 @@ input[type="checkbox"]:checked::after {
 .folder-color-manual span { color:#6b7280; font-size:16px; }
 .folder-save-btn { min-width:220px; justify-content:center; }
 
+.taskdog-summary-row { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin-bottom:14px; }
+.taskdog-kpi { border:1px solid var(--line-soft); background:#fff; border-radius:12px; padding:12px; }
+.taskdog-kpi small { color:var(--text-secondary); display:block; margin-bottom:6px; }
+.taskdog-kpi strong { font-size:24px; }
+
+.taskdog-mock-grid { display:grid; grid-template-columns:1.6fr 1fr; gap:14px; align-items:start; }
+.taskdog-card { border:1px solid var(--line-soft); border-radius:14px; background:#fff; padding:14px; }
+.taskdog-table-head { display:flex; justify-content:space-between; gap:10px; align-items:center; margin-bottom:10px; }
+.taskdog-table-head h3 { margin:0; }
+.taskdog-actions { display:flex; gap:8px; }
+.taskdog-row { cursor:pointer; }
+.taskdog-row:hover { background:#f8fafc; }
+.taskdog-current-step { color:var(--brand-500); font-weight:700; }
+
+.taskdog-drawer-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+.taskdog-drawer-head h3 { margin:0; }
+.taskdog-info-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; margin-bottom:12px; }
+.taskdog-info-grid > div { border:1px solid var(--line-soft); border-radius:10px; padding:10px; }
+.taskdog-info-grid small { display:block; color:var(--text-secondary); margin-bottom:4px; }
+.taskdog-info-grid p { margin:0; }
+.taskdog-step-list { list-style:none; padding:0; margin:8px 0 12px; display:grid; gap:8px; }
+.taskdog-step-list li { border:1px solid var(--line-soft); border-radius:10px; padding:8px 10px; display:flex; justify-content:space-between; align-items:center; }
+.taskdog-step-list li.current { border-color:var(--brand-500); background:var(--brand-100); }
+.taskdog-log-box { border:1px solid var(--line-soft); border-radius:10px; background:#f8fafc; padding:10px; max-height:150px; overflow:auto; }
+.taskdog-log-box p { margin:0 0 6px; font-size:13px; color:#334155; }
+
+.taskdog-badge { display:inline-flex; align-items:center; padding:4px 10px; border-radius:999px; font-size:12px; font-weight:700; text-transform:lowercase; }
+.taskdog-badge.pending { background:#f1f5f9; color:#475569; }
+.taskdog-badge.running { background:#eff6ff; color:#1d4ed8; }
+.taskdog-badge.retrying { background:#fff7ed; color:#c2410c; }
+.taskdog-badge.done { background:#ecfdf5; color:#15803d; }
+.taskdog-badge.error { background:#fef2f2; color:#b91c1c; }
+
 @media (max-width: 768px) {
+  .taskdog-summary-row { grid-template-columns:1fr; }
+  .taskdog-mock-grid { grid-template-columns:1fr; }
+  .taskdog-table-head { flex-direction:column; align-items:stretch; }
+
   .portal-header { height:auto; gap:var(--space-2); padding:var(--space-3); flex-direction:column; align-items:flex-start; }
   .desktop-only { display:none; }
   .mobile-only { display:block; }
