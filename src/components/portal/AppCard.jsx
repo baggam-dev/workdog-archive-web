@@ -26,5 +26,7 @@ export default function AppCard({ app }) {
 
   if (!meta.enabled) return <article className={cardClass} aria-disabled="true">{inner}</article>
 
+  if (app.href) return <a className={cardClass} href={app.href}>{inner}</a>
+
   return <Link className={cardClass} to={app.to || '/'}>{inner}</Link>
 }
