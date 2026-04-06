@@ -11,26 +11,56 @@ function formatPreview(doc) {
     .slice(0, 160)
 }
 
-const PROMPT_TEMPLATES = [
+const PROMPT_TEMPLATE_GROUPS = [
   {
-    key: 'plan',
-    label: '수업계획서',
-    text: '선택한 문서를 참고해서 2026 수업계획서 초안을 작성해줘. 목적, 운영 방향, 월별 또는 학기별 계획, 준비사항이 포함되게 정리해줘.',
+    group: '기본 문서',
+    items: [
+      {
+        key: 'plan',
+        label: '수업계획서',
+        text: '선택한 문서를 참고해서 2026 수업계획서 초안을 작성해줘. 목적, 운영 방향, 월별 또는 학기별 계획, 준비사항이 포함되게 정리해줘.',
+      },
+      {
+        key: 'notice',
+        label: '가정통신문',
+        text: '선택한 문서를 참고해서 학부모에게 보낼 가정통신문 초안을 작성해줘. 전달 목적, 주요 안내사항, 일정, 준비물, 문의 안내를 포함해줘.',
+      },
+      {
+        key: 'meeting',
+        label: '회의자료',
+        text: '선택한 문서를 참고해서 회의자료 초안을 작성해줘. 안건, 배경, 주요 논의 내용, 일정, 후속 조치를 구분해서 정리해줘.',
+      },
+      {
+        key: 'guide',
+        label: '안내문',
+        text: '선택한 문서를 참고해서 안내문 초안을 작성해줘. 대상, 목적, 핵심 안내사항, 일정, 유의사항이 잘 보이도록 정리해줘.',
+      },
+    ],
   },
   {
-    key: 'notice',
-    label: '가정통신문',
-    text: '선택한 문서를 참고해서 학부모에게 보낼 가정통신문 초안을 작성해줘. 전달 목적, 주요 안내사항, 일정, 준비물, 문의 안내를 포함해줘.',
-  },
-  {
-    key: 'meeting',
-    label: '회의자료',
-    text: '선택한 문서를 참고해서 회의자료 초안을 작성해줘. 안건, 배경, 주요 논의 내용, 일정, 후속 조치를 구분해서 정리해줘.',
-  },
-  {
-    key: 'guide',
-    label: '안내문',
-    text: '선택한 문서를 참고해서 안내문 초안을 작성해줘. 대상, 목적, 핵심 안내사항, 일정, 유의사항이 잘 보이도록 정리해줘.',
+    group: '교사용 문서',
+    items: [
+      {
+        key: 'class-management',
+        label: '학급운영계획',
+        text: '선택한 문서를 참고해서 학급운영계획 초안을 작성해줘. 학급 목표, 생활지도 방향, 학부모 소통 방식, 학기 운영 계획이 포함되게 정리해줘.',
+      },
+      {
+        key: 'evaluation',
+        label: '평가계획',
+        text: '선택한 문서를 참고해서 평가계획 초안을 작성해줘. 평가 목적, 평가 영역, 시기, 방법, 반영 기준을 구분해서 정리해줘.',
+      },
+      {
+        key: 'weekly',
+        label: '주간안내',
+        text: '선택한 문서를 참고해서 주간안내 초안을 작성해줘. 이번 주 학습 내용, 준비물, 가정 연계 사항, 전달사항을 학부모와 학생이 이해하기 쉽게 정리해줘.',
+      },
+      {
+        key: 'counsel',
+        label: '상담안내',
+        text: '선택한 문서를 참고해서 학부모 상담 안내문 초안을 작성해줘. 상담 목적, 신청 방법, 운영 일정, 유의사항을 포함해 정리해줘.',
+      },
+    ],
   },
 ]
 
@@ -112,8 +142,8 @@ export default function GeneratePage() {
   return (
     <section>
       <PageHeader
-        title="6-3 완료 · 문서 초안 생성"
-        description="선택한 문서를 바탕으로 새 문서 초안을 생성합니다. 다음 작업은 6-4 재생성 또는 템플릿 고도화입니다."
+        title="6-5 완료 · 프롬프트 템플릿 고도화"
+        description="선택한 문서를 바탕으로 새 문서 초안을 생성합니다. 다음 작업은 6-6 structuredContent.blocks 최소 보강입니다."
         actions={<button className="btn secondary" type="button" onClick={() => navigate('/archive/documents')}>문서 목록으로</button>}
       />
 
@@ -154,13 +184,18 @@ export default function GeneratePage() {
         <div className="form-card" style={{ marginBottom: 0 }}>
           <div>
             <p className="muted" style={{ marginBottom: 8 }}>프롬프트 템플릿</p>
-            <div className="actions" style={{ marginBottom: 12 }}>
-              {PROMPT_TEMPLATES.map((template) => (
-                <button key={template.key} className="btn secondary" type="button" disabled={submitting} onClick={() => setPrompt(template.text)}>
-                  {template.label}
-                </button>
-              ))}
-            </div>
+            {PROMPT_TEMPLATE_GROUPS.map((group) => (
+              <div key={group.group} style={{ marginBottom: 12 }}>
+                <p className="muted" style={{ marginBottom: 6 }}>{group.group}</p>
+                <div className="actions">
+                  {group.items.map((template) => (
+                    <button key={template.key} className="btn secondary" type="button" disabled={submitting} onClick={() => setPrompt(template.text)}>
+                      {template.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
           </div>
           <textarea
             rows={8}
