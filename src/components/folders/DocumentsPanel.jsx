@@ -19,6 +19,13 @@ function pickFullText(doc) {
   )
 }
 
+function blockTypeLabel(type) {
+  if (type === 'heading') return '제목'
+  if (type === 'table-placeholder') return '표'
+  if (type === 'image-placeholder') return '그림'
+  return '문단'
+}
+
 export default function DocumentsPanel({
   state,
   folders,
@@ -52,10 +59,13 @@ export default function DocumentsPanel({
   onSaveMemo,
 }) {
   const [fullOpen, setFullOpen] = useState(false)
+  const [structureOpen, setStructureOpen] = useState(false)
   const fullText = useMemo(() => pickFullText(activeDoc), [activeDoc])
+  const structuredBlocks = Array.isArray(activeDoc?.structuredContent?.blocks) ? activeDoc.structuredContent.blocks : []
 
   useEffect(() => {
     setFullOpen(false)
+    setStructureOpen(false)
   }, [activeDoc?.id])
 
   return (
@@ -173,8 +183,8 @@ export default function DocumentsPanel({
           <div className="modal doc-detail-modal" onClick={(e) => e.stopPropagation()}>
             <div className="doc-modal-head">
               <div>
-                <h2>문서 상세 · {activeDoc.title}</h2>
-                <p className="meta">형식: {activeDoc.fileType} · 수정일: {formatKST(activeDoc.uploadedAt)}</p>
+                <h2>6-12 완료 · 원본 문서 상세 · {activeDoc.title}</h2>
+                <p className="meta">형식: {activeDoc.fileType} · 수정일: {formatKST(activeDoc.uploadedAt)} · 다음 작업은 6-13 생성 이력 정리입니다.</p>
               </div>
               <button className="btn" type="button" onClick={() => setActiveDoc(null)}>닫기</button>
             </div>
@@ -194,6 +204,31 @@ export default function DocumentsPanel({
               {fullOpen && (
                 <article className="doc-fulltext-box">
                   <pre>{fullText || '문서 전체내용이 아직 없습니다.'}</pre>
+                </article>
+              )}
+            </section>
+
+            <section className="doc-modal-section">
+              <div className="title-row">
+                <h3>구조화 내용</h3>
+                <button className="btn secondary btn-sm" type="button" onClick={() => setStructureOpen((v) => !v)}>
+                  {structureOpen ? '접기' : `전체보기 (${structuredBlocks.length})`}
+                </button>
+              </div>
+              {structureOpen && (
+                <article className="doc-fulltext-box">
+                  {structuredBlocks.length === 0 ? (
+                    <p className="muted">구조화된 블록 정보가 없습니다.</p>
+                  ) : (
+                    <ul>
+                      {structuredBlocks.map((block, index) => (
+                        <li key={`${block.type}-${index}`} style={{ marginBottom: 8 }}>
+                          <strong>[{blockTypeLabel(block.type)}]</strong>
+                          <div>{block.text || '-'}</div>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </article>
               )}
             </section>
