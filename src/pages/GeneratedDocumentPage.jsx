@@ -24,6 +24,7 @@ export default function GeneratedDocumentPage() {
   const navigate = useNavigate()
   const { id } = useParams()
   const [doc, setDoc] = useState(null)
+  const [allDocs, setAllDocs] = useState([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [regenerating, setRegenerating] = useState(false)
@@ -46,9 +47,13 @@ export default function GeneratedDocumentPage() {
       try {
         setLoading(true)
         setError('')
-        const data = await apiClient.generatedDocument(id)
+        const [data, list] = await Promise.all([
+          apiClient.generatedDocument(id),
+          apiClient.generatedDocuments(),
+        ])
         if (!mounted) return
         setDoc(data)
+        setAllDocs(Array.isArray(list) ? list : [])
         setEditTitle(data?.title || '')
         setEditPrompt(data?.prompt || '')
         setEditContentText(data?.contentText || '')
@@ -65,6 +70,9 @@ export default function GeneratedDocumentPage() {
       mounted = false
     }
   }, [id])
+
+  const parentDoc = allDocs.find((item) => item.id === doc?.regeneratedFromId)
+  const childDocs = allDocs.filter((item) => item.regeneratedFromId === doc?.id)
 
   const onSave = async () => {
     if (!doc?.id || saving || regenerating) return
@@ -113,8 +121,8 @@ export default function GeneratedDocumentPage() {
   return (
     <section>
       <PageHeader
-        title="6-9 완료 · 생성 문서 UX 정리"
-        description="생성된 초안 결과를 확인, 수정 저장, 재생성할 수 있습니다. 다음 작업은 6-10 HWP 후처리 또는 상세 이력 정리입니다."
+        title="6-13 완료 · 생성문서 이력 정리"
+        description="생성된 초안 결과를 확인, 수정 저장, 재생성하고 파생 이력을 추적할 수 있습니다. 다음 작업은 6-14 원본-생성 연결 강화입니다."
         actions={<div className="actions"><button className="btn secondary" type="button" onClick={() => navigate('/archive/generated')}>생성 문서 목록</button><button className="btn secondary" type="button" onClick={() => navigate('/archive/documents')}>문서 목록으로</button></div>}
       />
 
@@ -146,6 +154,36 @@ export default function GeneratedDocumentPage() {
                 </div>
               </div>
             </div>
+          </article>
+
+          <article className="panel" style={{ marginTop: 20 }}>
+            <h2>생성 이력</h2>
+            <div className="summary-grid compact">
+              <div className="stat-card">
+                <small>부모 문서</small>
+                {parentDoc ? (
+                  <button className="btn secondary btn-sm" type="button" onClick={() => navigate(`/archive/generated/${parentDoc.id}`)}>{parentDoc.title || parentDoc.id}</button>
+                ) : (
+                  <strong>-</strong>
+                )}
+              </div>
+              <div className="stat-card">
+                <small>파생 문서 수</small>
+                <strong>{childDocs.length}</strong>
+              </div>
+            </div>
+            {childDocs.length > 0 && (
+              <div style={{ marginTop: 12 }}>
+                <p className="muted">이 문서에서 다시 생성된 문서</p>
+                <ul>
+                  {childDocs.map((child) => (
+                    <li key={child.id}>
+                      <button className="btn secondary btn-sm" type="button" onClick={() => navigate(`/archive/generated/${child.id}`)}>{child.title || child.id}</button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </article>
 
           <article className="panel" style={{ marginTop: 20 }}>
