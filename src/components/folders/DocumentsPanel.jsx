@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import FilterBar from '../common/FilterBar'
 import DataTable from '../common/DataTable'
 import InlineState from '../common/InlineState'
@@ -56,8 +56,10 @@ export default function DocumentsPanel({
   setActiveDoc,
   memoText,
   setMemoText,
+  linkedGeneratedDocs,
   onSaveMemo,
 }) {
+  const navigate = useNavigate()
   const [fullOpen, setFullOpen] = useState(false)
   const [structureOpen, setStructureOpen] = useState(false)
   const fullText = useMemo(() => pickFullText(activeDoc), [activeDoc])
@@ -230,6 +232,27 @@ export default function DocumentsPanel({
                     </ul>
                   )}
                 </article>
+              )}
+            </section>
+
+            <section className="doc-modal-section">
+              <h3>연결된 생성문서</h3>
+              {Array.isArray(linkedGeneratedDocs) && linkedGeneratedDocs.length > 0 ? (
+                <ul>
+                  {linkedGeneratedDocs.map((item) => (
+                    <li key={item.id}>
+                      <div className="title-row">
+                        <div>
+                          <strong>{item.title || item.id}</strong>
+                          <div className="muted">{item.prompt || '-'}</div>
+                        </div>
+                        <button className="btn secondary btn-sm" type="button" onClick={() => navigate(`/archive/generated/${item.id}`)}>생성문서 보기</button>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="muted">이 문서를 참고한 생성문서가 아직 없습니다.</p>
               )}
             </section>
 

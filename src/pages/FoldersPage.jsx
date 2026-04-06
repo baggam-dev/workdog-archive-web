@@ -73,6 +73,7 @@ export default function FoldersPage() {
   const [uploadPanelOpen, setUploadPanelOpen] = useState(false)
 
   const [activeDoc, setActiveDoc] = useState(null)
+  const [linkedGeneratedDocs, setLinkedGeneratedDocs] = useState([])
   const [memoText, setMemoText] = useState('')
   const [activeRowIndex, setActiveRowIndex] = useState(0)
   const rowRefs = useRef([])
@@ -262,12 +263,18 @@ export default function FoldersPage() {
 
   const onOpenDetail = async (doc) => {
     try {
-      const detail = await apiClient.document(doc.id)
-      setActiveDoc(detail || doc)
-      setMemoText((detail || doc).memo || '')
+      const [detail, generatedList] = await Promise.all([
+        apiClient.document(doc.id),
+        apiClient.generatedDocuments(),
+      ])
+      const resolved = detail || doc
+      setActiveDoc(resolved)
+      setMemoText(resolved.memo || '')
+      setLinkedGeneratedDocs((Array.isArray(generatedList) ? generatedList : []).filter((item) => Array.isArray(item.sourceDocumentIds) && item.sourceDocumentIds.includes(resolved.id)))
     } catch {
       setActiveDoc(doc)
       setMemoText(doc.memo || '')
+      setLinkedGeneratedDocs([])
     }
   }
 
@@ -326,6 +333,7 @@ export default function FoldersPage() {
         setActiveDoc={setActiveDoc}
         memoText={memoText}
         setMemoText={setMemoText}
+        linkedGeneratedDocs={linkedGeneratedDocs}
         onSaveMemo={onSaveMemo}
       />
 
