@@ -121,8 +121,8 @@ export default function GeneratedDocumentPage() {
   return (
     <section>
       <PageHeader
-        title="6-13 완료 · 생성문서 이력 정리"
-        description="생성된 초안 결과를 확인, 수정 저장, 재생성하고 파생 이력을 추적할 수 있습니다. 다음 작업은 6-14 원본-생성 연결 강화입니다."
+        title="생성 문서 상세"
+        description="생성된 초안 결과를 확인하고 수정 저장, 재생성, 이력 확인을 할 수 있습니다."
         actions={<div className="actions"><button className="btn secondary" type="button" onClick={() => navigate('/archive/generated')}>생성 문서 목록</button><button className="btn secondary" type="button" onClick={() => navigate('/archive/documents')}>문서 목록으로</button></div>}
       />
 

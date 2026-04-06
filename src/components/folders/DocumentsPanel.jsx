@@ -185,8 +185,8 @@ export default function DocumentsPanel({
           <div className="modal doc-detail-modal" onClick={(e) => e.stopPropagation()}>
             <div className="doc-modal-head">
               <div>
-                <h2>6-15 완료 · 원본 문서 상세 · {activeDoc.title}</h2>
-                <p className="meta">형식: {activeDoc.fileType} · 수정일: {formatKST(activeDoc.uploadedAt)} · 다음 작업은 6-16 생성문서 목록 고급 필터입니다.</p>
+                <h2>원본 문서 상세 · {activeDoc.title}</h2>
+                <p className="meta">형식: {activeDoc.fileType} · 수정일: {formatKST(activeDoc.uploadedAt)}</p>
               </div>
               <div className="actions">
                 <button className="btn primary" type="button" onClick={() => navigate('/archive/generate', { state: { documentIds: [activeDoc.id] } })}>이 문서로 바로 초안 만들기</button>

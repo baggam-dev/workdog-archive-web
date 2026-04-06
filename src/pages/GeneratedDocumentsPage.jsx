@@ -77,8 +77,8 @@ export default function GeneratedDocumentsPage() {
   return (
     <section>
       <PageHeader
-        title="6-9 완료 · 생성 문서 UX 정리"
-        description="저장된 생성 초안을 다시 찾고, 빠르게 열어볼 수 있습니다. 다음 작업은 6-10 HWP 후처리 또는 상세 이력 정리입니다."
+        title="생성 문서 목록"
+        description="저장된 생성 초안을 다시 찾고 빠르게 열어볼 수 있습니다."
         actions={<div className="actions"><button className="btn secondary" type="button" onClick={() => navigate('/archive/generate')}>새 초안 생성</button><button className="btn secondary" type="button" onClick={() => navigate('/archive/documents')}>문서 목록으로</button></div>}
       />
 

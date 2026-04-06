@@ -142,8 +142,8 @@ export default function GeneratePage() {
   return (
     <section>
       <PageHeader
-        title="6-5 완료 · 프롬프트 템플릿 고도화"
-        description="선택한 문서를 바탕으로 새 문서 초안을 생성합니다. 다음 작업은 6-6 structuredContent.blocks 최소 보강입니다."
+        title="문서 초안 생성"
+        description="선택한 문서를 바탕으로 새 문서 초안을 생성합니다."
         actions={<button className="btn secondary" type="button" onClick={() => navigate('/archive/documents')}>문서 목록으로</button>}
       />
 
