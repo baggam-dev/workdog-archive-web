@@ -33,6 +33,7 @@ export default function DocumentsPanel({
   defaultFilter,
   checkedDocIds,
   onBulkDelete,
+  onGenerateSelected,
   filteredDocs,
   setCheckedDocIds,
   setSortKey,
@@ -99,6 +100,7 @@ export default function DocumentsPanel({
       </div>
 
       <div className="actions" style={{ marginBottom: 8 }}>
+        <button className="btn primary" type="button" onClick={onGenerateSelected} disabled={checkedDocIds.length === 0}>선택 문서로 초안 만들기</button>
         {checkedDocIds.length > 0 ? (
           <button className="btn danger" type="button" onClick={onBulkDelete}>선택 삭제 ({checkedDocIds.length})</button>
         ) : (

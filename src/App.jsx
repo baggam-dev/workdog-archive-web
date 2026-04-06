@@ -8,6 +8,8 @@ import FolderManagementPage from './pages/FolderManagementPage'
 import StudentsDashboardPage from './pages/StudentsDashboardPage'
 import ComingSoonPage from './pages/ComingSoonPage'
 import TaskdogMockPage from './pages/TaskdogMockPage'
+import GeneratePage from './pages/GeneratePage'
+import GeneratedDocumentPage from './pages/GeneratedDocumentPage'
 import './App.css'
 
 const taskdogNavItems = [
@@ -44,6 +46,22 @@ function App() {
           element={(
             <AppLayout appName="Workdog-Archive">
               <FolderManagementPage />
+            </AppLayout>
+          )}
+        />
+        <Route
+          path="/archive/generate"
+          element={(
+            <AppLayout appName="Workdog-Archive">
+              <GeneratePage />
+            </AppLayout>
+          )}
+        />
+        <Route
+          path="/archive/generated/:id"
+          element={(
+            <AppLayout appName="Workdog-Archive">
+              <GeneratedDocumentPage />
             </AppLayout>
           )}
         />

@@ -82,4 +82,12 @@ export const apiClient = {
     form.append('file', file)
     return request(`/api/folders/${folderId}/documents`, { method: 'POST', body: form })
   },
+  generateDocument: (payload) =>
+    request('/api/generations', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    }),
+  generatedDocuments: () => request('/api/generated-documents'),
+  generatedDocument: (id) => request(`/api/generated-documents/${id}`),
 }

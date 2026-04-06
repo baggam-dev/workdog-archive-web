@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { apiClient } from '../lib/apiClient'
 import useDocumentViewModel from '../hooks/useDocumentViewModel'
 import DocumentsPanel from '../components/folders/DocumentsPanel'
@@ -55,6 +56,7 @@ function statusState(loading, error, length) {
 }
 
 export default function FoldersPage() {
+  const navigate = useNavigate()
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [notice, setNotice] = useState({ type: '', message: '' })
@@ -253,6 +255,11 @@ export default function FoldersPage() {
     }
   }
 
+  const onGenerateSelected = () => {
+    if (checkedDocIds.length === 0) return
+    navigate('/archive/generate', { state: { documentIds: checkedDocIds } })
+  }
+
   const onOpenDetail = async (doc) => {
     try {
       const detail = await apiClient.document(doc.id)
@@ -303,6 +310,7 @@ export default function FoldersPage() {
         defaultFilter={defaultFilter}
         checkedDocIds={checkedDocIds}
         onBulkDelete={onBulkDelete}
+        onGenerateSelected={onGenerateSelected}
         filteredDocs={filteredDocs}
         setCheckedDocIds={setCheckedDocIds}
         setSortKey={setSortKey}
