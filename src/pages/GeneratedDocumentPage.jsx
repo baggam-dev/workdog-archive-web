@@ -10,6 +10,7 @@ export default function GeneratedDocumentPage() {
   const [doc, setDoc] = useState(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [regenerating, setRegenerating] = useState(false)
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
   const [editTitle, setEditTitle] = useState('')
@@ -50,7 +51,7 @@ export default function GeneratedDocumentPage() {
   }, [id])
 
   const onSave = async () => {
-    if (!doc?.id || saving) return
+    if (!doc?.id || saving || regenerating) return
 
     try {
       setSaving(true)
@@ -74,15 +75,34 @@ export default function GeneratedDocumentPage() {
     }
   }
 
+  const onRegenerate = async () => {
+    if (!doc?.id || regenerating || saving) return
+
+    try {
+      setRegenerating(true)
+      setError('')
+      setNotice('같은 참고 문서로 초안을 다시 생성하고 있습니다...')
+      const regenerated = await apiClient.regenerateGeneratedDocument(doc.id, {
+        prompt: editPrompt,
+      })
+      navigate(`/archive/generated/${regenerated.id}`)
+    } catch (e) {
+      setError(e?.message || '재생성에 실패했습니다.')
+      setNotice('')
+    } finally {
+      setRegenerating(false)
+    }
+  }
+
   return (
     <section>
       <PageHeader
-        title="6-2 완료 · 생성 문서 수정"
-        description="생성된 초안 결과를 확인하고 수정 저장할 수 있습니다. 다음 작업은 6-3 프롬프트 템플릿입니다."
+        title="6-4 완료 · 생성 문서 재생성"
+        description="생성된 초안 결과를 확인, 수정 저장, 재생성할 수 있습니다. 다음 작업은 6-5 템플릿 고도화 또는 structuredContent 보강입니다."
         actions={<div className="actions"><button className="btn secondary" type="button" onClick={() => navigate('/archive/generated')}>생성 문서 목록</button><button className="btn secondary" type="button" onClick={() => navigate('/archive/documents')}>문서 목록으로</button></div>}
       />
 
-      <InlineState cls={error ? 'error' : (loading || saving) ? 'loading' : ''} message={error || notice || (loading ? '생성 문서를 불러오는 중...' : '')} />
+      <InlineState cls={error ? 'error' : (loading || saving || regenerating) ? 'loading' : ''} message={error || notice || (loading ? '생성 문서를 불러오는 중...' : '')} />
 
       {!loading && !error && doc && (
         <>
@@ -132,7 +152,8 @@ export default function GeneratedDocumentPage() {
             <div className="form-card" style={{ marginBottom: 0 }}>
               <textarea rows={18} value={editContentText} onChange={(e) => setEditContentText(e.target.value)} placeholder="본문 내용" disabled={saving} />
               <div className="actions right-actions">
-                <button className="btn primary" type="button" onClick={onSave} disabled={saving}>{{true: '저장 중...', false: '수정 저장'}[saving]}</button>
+                <button className="btn secondary" type="button" onClick={onRegenerate} disabled={saving || regenerating}>{regenerating ? '재생성 중...' : '이 프롬프트로 다시 생성'}</button>
+                <button className="btn primary" type="button" onClick={onSave} disabled={saving || regenerating}>{saving ? '저장 중...' : '수정 저장'}</button>
               </div>
             </div>
           </article>
