@@ -90,4 +90,10 @@ export const apiClient = {
     }),
   generatedDocuments: () => request('/api/generated-documents'),
   generatedDocument: (id) => request(`/api/generated-documents/${id}`),
+  patchGeneratedDocument: (id, payload) =>
+    request(`/api/generated-documents/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    }),
 }
