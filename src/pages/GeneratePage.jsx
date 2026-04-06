@@ -11,6 +11,29 @@ function formatPreview(doc) {
     .slice(0, 160)
 }
 
+const PROMPT_TEMPLATES = [
+  {
+    key: 'plan',
+    label: '수업계획서',
+    text: '선택한 문서를 참고해서 2026 수업계획서 초안을 작성해줘. 목적, 운영 방향, 월별 또는 학기별 계획, 준비사항이 포함되게 정리해줘.',
+  },
+  {
+    key: 'notice',
+    label: '가정통신문',
+    text: '선택한 문서를 참고해서 학부모에게 보낼 가정통신문 초안을 작성해줘. 전달 목적, 주요 안내사항, 일정, 준비물, 문의 안내를 포함해줘.',
+  },
+  {
+    key: 'meeting',
+    label: '회의자료',
+    text: '선택한 문서를 참고해서 회의자료 초안을 작성해줘. 안건, 배경, 주요 논의 내용, 일정, 후속 조치를 구분해서 정리해줘.',
+  },
+  {
+    key: 'guide',
+    label: '안내문',
+    text: '선택한 문서를 참고해서 안내문 초안을 작성해줘. 대상, 목적, 핵심 안내사항, 일정, 유의사항이 잘 보이도록 정리해줘.',
+  },
+]
+
 export default function GeneratePage() {
   const navigate = useNavigate()
   const location = useLocation()
@@ -89,8 +112,8 @@ export default function GeneratePage() {
   return (
     <section>
       <PageHeader
-        title="문서 초안 생성"
-        description="선택한 문서를 바탕으로 새 문서 초안을 생성합니다."
+        title="6-3 완료 · 문서 초안 생성"
+        description="선택한 문서를 바탕으로 새 문서 초안을 생성합니다. 다음 작업은 6-4 재생성 또는 템플릿 고도화입니다."
         actions={<button className="btn secondary" type="button" onClick={() => navigate('/archive/documents')}>문서 목록으로</button>}
       />
 
@@ -129,6 +152,16 @@ export default function GeneratePage() {
       <article className="panel" style={{ marginTop: 20 }}>
         <h2>생성 요청</h2>
         <div className="form-card" style={{ marginBottom: 0 }}>
+          <div>
+            <p className="muted" style={{ marginBottom: 8 }}>프롬프트 템플릿</p>
+            <div className="actions" style={{ marginBottom: 12 }}>
+              {PROMPT_TEMPLATES.map((template) => (
+                <button key={template.key} className="btn secondary" type="button" disabled={submitting} onClick={() => setPrompt(template.text)}>
+                  {template.label}
+                </button>
+              ))}
+            </div>
+          </div>
           <textarea
             rows={8}
             placeholder="예: 2026 수업계획서 초안 만들어줘"
