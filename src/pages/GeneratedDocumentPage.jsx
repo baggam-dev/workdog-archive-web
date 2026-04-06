@@ -4,6 +4,22 @@ import PageHeader from '../components/common/PageHeader'
 import InlineState from '../components/common/InlineState'
 import { apiClient } from '../lib/apiClient'
 
+function formatKST(iso) {
+  try {
+    return new Date(iso).toLocaleString('ko-KR', {
+      timeZone: 'Asia/Seoul',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    })
+  } catch {
+    return iso || '-'
+  }
+}
+
 export default function GeneratedDocumentPage() {
   const navigate = useNavigate()
   const { id } = useParams()
@@ -97,8 +113,8 @@ export default function GeneratedDocumentPage() {
   return (
     <section>
       <PageHeader
-        title="6-4 완료 · 생성 문서 재생성"
-        description="생성된 초안 결과를 확인, 수정 저장, 재생성할 수 있습니다. 다음 작업은 6-5 템플릿 고도화 또는 structuredContent 보강입니다."
+        title="6-9 완료 · 생성 문서 UX 정리"
+        description="생성된 초안 결과를 확인, 수정 저장, 재생성할 수 있습니다. 다음 작업은 6-10 HWP 후처리 또는 상세 이력 정리입니다."
         actions={<div className="actions"><button className="btn secondary" type="button" onClick={() => navigate('/archive/generated')}>생성 문서 목록</button><button className="btn secondary" type="button" onClick={() => navigate('/archive/documents')}>문서 목록으로</button></div>}
       />
 
@@ -109,16 +125,24 @@ export default function GeneratedDocumentPage() {
           <article className="panel">
             <h2>기본 정보</h2>
             <div className="form-card" style={{ marginBottom: 0 }}>
-              <input value={editTitle} onChange={(e) => setEditTitle(e.target.value)} placeholder="제목" disabled={saving} />
-              <textarea rows={3} value={editPrompt} onChange={(e) => setEditPrompt(e.target.value)} placeholder="프롬프트" disabled={saving} />
+              <input value={editTitle} onChange={(e) => setEditTitle(e.target.value)} placeholder="제목" disabled={saving || regenerating} />
+              <textarea rows={3} value={editPrompt} onChange={(e) => setEditPrompt(e.target.value)} placeholder="프롬프트" disabled={saving || regenerating} />
               <div className="summary-grid compact">
                 <div className="stat-card">
                   <small>참고 문서 수</small>
                   <strong>{Array.isArray(doc.sourceDocumentIds) ? doc.sourceDocumentIds.length : 0}</strong>
                 </div>
                 <div className="stat-card">
+                  <small>생성일</small>
+                  <strong style={{ whiteSpace: 'normal' }}>{formatKST(doc.createdAt)}</strong>
+                </div>
+                <div className="stat-card">
                   <small>마지막 수정</small>
-                  <strong style={{ whiteSpace: 'normal' }}>{doc.updatedAt || '-'}</strong>
+                  <strong style={{ whiteSpace: 'normal' }}>{formatKST(doc.updatedAt || doc.createdAt)}</strong>
+                </div>
+                <div className="stat-card">
+                  <small>재생성 원본</small>
+                  <strong style={{ whiteSpace: 'normal' }}>{doc.regeneratedFromId || '-'}</strong>
                 </div>
               </div>
             </div>
@@ -130,9 +154,14 @@ export default function GeneratedDocumentPage() {
               <ul>
                 {doc.sourceDocumentsPreview.map((source) => (
                   <li key={source.id}>
-                    <strong>{source.title || source.id}</strong>
-                    <span className="muted"> ({source.category || '기타'})</span>
-                    <div><code>{source.id}</code></div>
+                    <div className="title-row">
+                      <div>
+                        <strong>{source.title || source.id}</strong>
+                        <span className="muted"> ({source.category || '기타'})</span>
+                        <div><code>{source.id}</code></div>
+                      </div>
+                      <button className="btn secondary btn-sm" type="button" onClick={() => navigate('/archive/documents')}>원본 문서 보기</button>
+                    </div>
                   </li>
                 ))}
               </ul>
@@ -150,7 +179,7 @@ export default function GeneratedDocumentPage() {
           <article className="panel" style={{ marginTop: 20 }}>
             <h2>본문</h2>
             <div className="form-card" style={{ marginBottom: 0 }}>
-              <textarea rows={18} value={editContentText} onChange={(e) => setEditContentText(e.target.value)} placeholder="본문 내용" disabled={saving} />
+              <textarea rows={18} value={editContentText} onChange={(e) => setEditContentText(e.target.value)} placeholder="본문 내용" disabled={saving || regenerating} />
               <div className="actions right-actions">
                 <button className="btn secondary" type="button" onClick={onRegenerate} disabled={saving || regenerating}>{regenerating ? '재생성 중...' : '이 프롬프트로 다시 생성'}</button>
                 <button className="btn primary" type="button" onClick={onSave} disabled={saving || regenerating}>{saving ? '저장 중...' : '수정 저장'}</button>
