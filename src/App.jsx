@@ -10,6 +10,7 @@ import ComingSoonPage from './pages/ComingSoonPage'
 import TaskdogMockPage from './pages/TaskdogMockPage'
 import GeneratePage from './pages/GeneratePage'
 import GeneratedDocumentPage from './pages/GeneratedDocumentPage'
+import GeneratedDocumentsPage from './pages/GeneratedDocumentsPage'
 import './App.css'
 
 const taskdogNavItems = [
@@ -54,6 +55,14 @@ function App() {
           element={(
             <AppLayout appName="Workdog-Archive">
               <GeneratePage />
+            </AppLayout>
+          )}
+        />
+        <Route
+          path="/archive/generated"
+          element={(
+            <AppLayout appName="Workdog-Archive">
+              <GeneratedDocumentsPage />
             </AppLayout>
           )}
         />

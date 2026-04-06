@@ -44,9 +44,9 @@ export default function GeneratedDocumentPage() {
   return (
     <section>
       <PageHeader
-        title="생성 문서"
-        description="생성된 초안 결과를 확인합니다."
-        actions={<button className="btn secondary" type="button" onClick={() => navigate('/archive/documents')}>문서 목록으로</button>}
+        title="6-1 완료 · 생성 문서"
+        description="생성된 초안 결과를 확인합니다. 다음 작업은 6-2 수정 저장입니다."
+        actions={<div className="actions"><button className="btn secondary" type="button" onClick={() => navigate('/archive/generated')}>생성 문서 목록</button><button className="btn secondary" type="button" onClick={() => navigate('/archive/documents')}>문서 목록으로</button></div>}
       />
 
       <InlineState cls={error ? 'error' : loading ? 'loading' : ''} message={error || (loading ? '생성 문서를 불러오는 중...' : '')} />
