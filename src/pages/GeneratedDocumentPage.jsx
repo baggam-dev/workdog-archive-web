@@ -28,6 +28,7 @@ export default function GeneratedDocumentPage() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [regenerating, setRegenerating] = useState(false)
+  const [saveSuccess, setSaveSuccess] = useState(false)
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
   const [editTitle, setEditTitle] = useState('')
@@ -79,6 +80,7 @@ export default function GeneratedDocumentPage() {
 
     try {
       setSaving(true)
+      setSaveSuccess(false)
       setError('')
       setNotice('수정 내용을 저장하고 있습니다...')
       const updated = await apiClient.patchGeneratedDocument(doc.id, {
@@ -87,10 +89,16 @@ export default function GeneratedDocumentPage() {
         contentText: editContentText,
       })
       setDoc(updated)
+      setAllDocs((prev) => prev.map((item) => (item.id === updated.id ? updated : item)))
       setEditTitle(updated?.title || '')
       setEditPrompt(updated?.prompt || '')
       setEditContentText(updated?.contentText || '')
-      setNotice('저장했습니다.')
+      setNotice('저장되었습니다.')
+      setSaveSuccess(true)
+      setTimeout(() => {
+        setSaveSuccess(false)
+        setNotice('')
+      }, 1800)
     } catch (e) {
       setError(e?.message || '생성 문서 저장에 실패했습니다.')
       setNotice('')
@@ -122,7 +130,7 @@ export default function GeneratedDocumentPage() {
     <section>
       <PageHeader
         title="생성 문서 상세"
-        description="생성된 초안 결과를 확인하고 수정 저장, 재생성, 이력 확인을 할 수 있습니다."
+        description="생성된 초안 결과를 확인하고 수정 저장, 재생성, 이력 확인을 할 수 있습니다. 저장 시 페이지 이동 없이 바로 반영됩니다."
         actions={<div className="actions"><button className="btn secondary" type="button" onClick={() => navigate('/archive/generated')}>생성 문서 목록</button><button className="btn secondary" type="button" onClick={() => navigate('/archive/documents')}>문서 목록으로</button></div>}
       />
 
@@ -147,6 +155,7 @@ export default function GeneratedDocumentPage() {
                 <div className="stat-card">
                   <small>마지막 수정</small>
                   <strong style={{ whiteSpace: 'normal' }}>{formatKST(doc.updatedAt || doc.createdAt)}</strong>
+                  {saveSuccess ? <div className="muted" style={{ color: '#16a34a', marginTop: 4 }}>저장 완료</div> : null}
                 </div>
                 <div className="stat-card">
                   <small>재생성 원본</small>
@@ -220,7 +229,7 @@ export default function GeneratedDocumentPage() {
               <textarea rows={18} value={editContentText} onChange={(e) => setEditContentText(e.target.value)} placeholder="본문 내용" disabled={saving || regenerating} />
               <div className="actions right-actions">
                 <button className="btn secondary" type="button" onClick={onRegenerate} disabled={saving || regenerating}>{regenerating ? '재생성 중...' : '이 프롬프트로 다시 생성'}</button>
-                <button className="btn primary" type="button" onClick={onSave} disabled={saving || regenerating}>{saving ? '저장 중...' : '수정 저장'}</button>
+                <button className="btn primary" type="button" onClick={onSave} disabled={saving || regenerating}>{saving ? '저장 중...' : (saveSuccess ? '저장 완료' : '수정 저장')}</button>
               </div>
             </div>
           </article>
