@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import PageHeader from '../components/common/PageHeader'
 import InlineState from '../components/common/InlineState'
+import Toast from '../components/common/Toast'
 import { apiClient } from '../lib/apiClient'
 
 function formatKST(iso) {
@@ -31,6 +32,7 @@ export default function GeneratedDocumentPage() {
   const [saveSuccess, setSaveSuccess] = useState(false)
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
+  const [toast, setToast] = useState({ type: '', message: '' })
   const [editTitle, setEditTitle] = useState('')
   const [editPrompt, setEditPrompt] = useState('')
   const [editContentText, setEditContentText] = useState('')
@@ -93,11 +95,12 @@ export default function GeneratedDocumentPage() {
       setEditTitle(updated?.title || '')
       setEditPrompt(updated?.prompt || '')
       setEditContentText(updated?.contentText || '')
-      setNotice('저장되었습니다.')
+      setNotice('')
       setSaveSuccess(true)
+      setToast({ type: 'success', message: '저장되었습니다.' })
       setTimeout(() => {
         setSaveSuccess(false)
-        setNotice('')
+        setToast({ type: '', message: '' })
       }, 1800)
     } catch (e) {
       setError(e?.message || '생성 문서 저장에 실패했습니다.')
@@ -134,6 +137,7 @@ export default function GeneratedDocumentPage() {
         actions={<div className="actions"><button className="btn secondary" type="button" onClick={() => navigate('/archive/generated')}>생성 문서 목록</button><button className="btn secondary" type="button" onClick={() => navigate('/archive/documents')}>문서 목록으로</button></div>}
       />
 
+      <Toast type={toast.type} message={toast.message} />
       <InlineState cls={error ? 'error' : (loading || saving || regenerating) ? 'loading' : ''} message={error || notice || (loading ? '생성 문서를 불러오는 중...' : '')} />
 
       {!loading && !error && doc && (
