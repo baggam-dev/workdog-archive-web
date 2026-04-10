@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 
-export default function ActionMenu({ onDetail, onDelete }) {
+export default function ActionMenu({ onDetail, onViewGenerated, onDelete }) {
   const [open, setOpen] = useState(false)
   const rootRef = useRef(null)
 
@@ -25,6 +25,7 @@ export default function ActionMenu({ onDetail, onDelete }) {
       {open && (
         <div className="action-menu-popover" role="menu">
           <button className="menu-item" type="button" onClick={() => { setOpen(false); onDetail?.() }}>상세 보기</button>
+          <button className="menu-item" type="button" onClick={() => { setOpen(false); onViewGenerated?.() }}>관련 초안 보기</button>
           <button className="menu-item danger" type="button" onClick={() => { setOpen(false); onDelete?.() }}>삭제</button>
         </div>
       )}

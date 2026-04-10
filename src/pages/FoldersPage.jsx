@@ -65,6 +65,7 @@ export default function FoldersPage() {
   const [selectedFolderId, setSelectedFolderId] = useState('')
   const [folderInfo, setFolderInfo] = useState(null)
   const [docs, setDocs] = useState([])
+  const [generatedDocs, setGeneratedDocs] = useState([])
   const [filter, setFilter] = useState(defaultFilter)
   const [sort, setSort] = useState({ key: 'uploadedAt', dir: 'desc' })
   const [checkedDocIds, setCheckedDocIds] = useState([])
@@ -110,11 +111,17 @@ export default function FoldersPage() {
     if (!folderId) {
       setFolderInfo(null)
       setDocs([])
+      setGeneratedDocs([])
       return
     }
-    const [folder, documents] = await Promise.all([apiClient.folder(folderId), apiClient.folderDocuments(folderId)])
+    const [folder, documents, generated] = await Promise.all([
+      apiClient.folder(folderId),
+      apiClient.folderDocuments(folderId),
+      apiClient.generatedDocuments(),
+    ])
     setFolderInfo(folder)
     setDocs(Array.isArray(documents) ? documents : [])
+    setGeneratedDocs(Array.isArray(generated) ? generated : [])
     setCheckedDocIds([])
   }
 
@@ -164,7 +171,12 @@ export default function FoldersPage() {
     }
   }, [selectedFolderId])
 
-  const filteredDocs = useDocumentViewModel({ docs, filter, sort })
+  const docsWithGeneratedCount = docs.map((doc) => ({
+    ...doc,
+    generatedCount: generatedDocs.filter((item) => Array.isArray(item.sourceDocumentIds) && item.sourceDocumentIds.includes(doc.id)).length,
+  }))
+
+  const filteredDocs = useDocumentViewModel({ docs: docsWithGeneratedCount, filter, sort })
   const state = statusState(loading, error, filteredDocs.length)
 
   useEffect(() => {
@@ -261,6 +273,10 @@ export default function FoldersPage() {
     navigate('/archive/generate', { state: { documentIds: checkedDocIds } })
   }
 
+  const onViewGenerated = (doc) => {
+    navigate('/archive/generated', { state: { sourceDocumentId: doc.id, sourceDocumentTitle: doc.title } })
+  }
+
   const onOpenDetail = async (doc) => {
     try {
       const [detail, generatedList] = await Promise.all([
@@ -298,7 +314,7 @@ export default function FoldersPage() {
       <PageHeader
         title="문서 관리"
         description="문서 목록 중심 작업 화면"
-        actions={<button className="btn primary" type="button" disabled={!selectedFolderId} onClick={() => setUploadPanelOpen((v) => !v)}>+ 업로드</button>}
+        actions={<div className="actions"><button className="btn secondary" type="button" onClick={() => navigate('/archive/generated')}>최근 초안</button><button className="btn primary" type="button" disabled={!selectedFolderId} onClick={() => setUploadPanelOpen((v) => !v)}>+ 업로드</button></div>}
       />
       <Toast type={notice.type} message={notice.message} />
 
@@ -327,6 +343,7 @@ export default function FoldersPage() {
         setActiveRowIndex={setActiveRowIndex}
         moveFocusToRow={moveFocusToRow}
         onOpenDetail={onOpenDetail}
+        onViewGenerated={onViewGenerated}
         onToggleImportant={onToggleImportant}
         onDeleteOne={onDeleteOne}
         activeDoc={activeDoc}

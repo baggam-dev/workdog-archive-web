@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import PageHeader from '../components/common/PageHeader'
 import InlineState from '../components/common/InlineState'
 import EmptyState from '../components/common/EmptyState'
@@ -27,6 +27,9 @@ function shortPrompt(prompt) {
 
 export default function GeneratedDocumentsPage() {
   const navigate = useNavigate()
+  const location = useLocation()
+  const sourceDocumentId = location.state?.sourceDocumentId || ''
+  const sourceDocumentTitle = location.state?.sourceDocumentTitle || ''
   const [docs, setDocs] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -59,10 +62,11 @@ export default function GeneratedDocumentsPage() {
   const filteredDocs = useMemo(() => {
     const q = query.trim().toLowerCase()
     const list = docs.filter((doc) => {
-      if (!q) return true
-      return [doc.title, doc.prompt, ...(doc.sourceDocumentsPreview || []).map((item) => item.title)]
+      const matchesSource = !sourceDocumentId || (Array.isArray(doc.sourceDocumentIds) && doc.sourceDocumentIds.includes(sourceDocumentId))
+      const matchesQuery = !q || [doc.title, doc.prompt, ...(doc.sourceDocumentsPreview || []).map((item) => item.title)]
         .filter(Boolean)
         .some((value) => String(value).toLowerCase().includes(q))
+      return matchesSource && matchesQuery
     })
 
     list.sort((a, b) => {
@@ -72,13 +76,13 @@ export default function GeneratedDocumentsPage() {
     })
 
     return list
-  }, [docs, query, sortKey])
+  }, [docs, query, sortKey, sourceDocumentId])
 
   return (
     <section>
       <PageHeader
         title="생성 문서 목록"
-        description="저장된 생성 초안을 다시 찾고 빠르게 열어볼 수 있습니다."
+        description={sourceDocumentId ? `${sourceDocumentTitle || '선택 문서'}를 참고한 생성 초안을 보고 있습니다.` : '저장된 생성 초안을 다시 찾고 빠르게 열어볼 수 있습니다.'}
         actions={<div className="actions"><button className="btn secondary" type="button" onClick={() => navigate('/archive/generate')}>새 초안 생성</button><button className="btn secondary" type="button" onClick={() => navigate('/archive/documents')}>문서 목록으로</button></div>}
       />
 

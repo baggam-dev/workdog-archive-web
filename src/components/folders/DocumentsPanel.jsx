@@ -50,6 +50,7 @@ export default function DocumentsPanel({
   setActiveRowIndex,
   moveFocusToRow,
   onOpenDetail,
+  onViewGenerated,
   onToggleImportant,
   onDeleteOne,
   activeDoc,
@@ -131,7 +132,7 @@ export default function DocumentsPanel({
         setSortKey={setSortKey}
         rows={filteredDocs.length === 0 ? (
           <tr>
-            <td colSpan={7}>
+            <td colSpan={8}>
               <EmptyState title="표시할 문서가 없습니다." description="필터 조건을 바꾸거나 새 문서를 업로드해 주세요." />
             </td>
           </tr>
@@ -172,9 +173,10 @@ export default function DocumentsPanel({
             <td className="ellipsis" title={d.fileName || d.title}>{d.title}</td>
             <td className="ellipsis" title={String(d.fileType || '').toUpperCase()}>{String(d.fileType || '').toUpperCase()}</td>
             <td className="ellipsis" title={d.category || '기타'}>{d.category || '기타'}</td>
+            <td title={`관련 초안 ${d.generatedCount || 0}개`}>{d.generatedCount || 0}개</td>
             <td title={formatKST(d.uploadedAt)}>{formatKSTDateOnly(d.uploadedAt)}</td>
             <td className="action-cell">
-              <ActionMenu onDetail={() => onOpenDetail(d)} onDelete={() => onDeleteOne(d.id)} />
+              <ActionMenu onDetail={() => onOpenDetail(d)} onViewGenerated={() => onViewGenerated(d)} onDelete={() => onDeleteOne(d.id)} />
             </td>
           </tr>
         ))}

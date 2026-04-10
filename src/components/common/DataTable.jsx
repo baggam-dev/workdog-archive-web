@@ -15,6 +15,7 @@ export default function DataTable({
           <col className="col-type" />
           <col className="col-category" />
           <col className="col-date" />
+          <col className="col-date" />
           <col className="col-action" />
         </colgroup>
         <thead>
@@ -24,6 +25,7 @@ export default function DataTable({
             <th><button className="th-btn" onClick={() => setSortKey('title')}>문서명 {sortMark('title')}</button></th>
             <th><button className="th-btn" onClick={() => setSortKey('fileType')}>형식 {sortMark('fileType')}</button></th>
             <th><button className="th-btn" onClick={() => setSortKey('category')}>카테고리 {sortMark('category')}</button></th>
+            <th>관련 초안</th>
             <th><button className="th-btn" onClick={() => setSortKey('uploadedAt')}>수정일 {sortMark('uploadedAt')}</button></th>
             <th className="action-head">액션</th>
           </tr>
