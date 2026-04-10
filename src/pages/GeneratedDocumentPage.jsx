@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import PageHeader from '../components/common/PageHeader'
 import InlineState from '../components/common/InlineState'
 import Toast from '../components/common/Toast'
+import StructuredContentRenderer from '../components/common/StructuredContentRenderer'
 import { apiClient } from '../lib/apiClient'
 
 function formatKST(iso) {
@@ -228,7 +229,12 @@ export default function GeneratedDocumentPage() {
           </article>
 
           <article className="panel" style={{ marginTop: 20 }}>
-            <h2>본문</h2>
+            <h2>구조화 미리보기</h2>
+            <StructuredContentRenderer structuredContent={doc.structuredContent} fallbackText={doc.contentText} />
+          </article>
+
+          <article className="panel" style={{ marginTop: 20 }}>
+            <h2>본문 편집</h2>
             <div className="form-card" style={{ marginBottom: 0 }}>
               <textarea rows={18} value={editContentText} onChange={(e) => setEditContentText(e.target.value)} placeholder="본문 내용" disabled={saving || regenerating} />
               <div className="actions right-actions">

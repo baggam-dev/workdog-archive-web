@@ -6,6 +6,7 @@ import InlineState from '../common/InlineState'
 import SummaryStat from '../common/SummaryStat'
 import EmptyState from '../common/EmptyState'
 import ActionMenu from '../common/ActionMenu'
+import StructuredContentRenderer from '../common/StructuredContentRenderer'
 
 function pickFullText(doc) {
   return (
@@ -226,19 +227,20 @@ export default function DocumentsPanel({
                 </button>
               </div>
               {structureOpen && (
-                <article className="doc-fulltext-box">
-                  {structuredBlocks.length === 0 ? (
-                    <p className="muted">구조화된 블록 정보가 없습니다.</p>
-                  ) : (
-                    <ul>
-                      {structuredBlocks.map((block, index) => (
-                        <li key={`${block.type}-${index}`} style={{ marginBottom: 8 }}>
-                          <strong>[{blockTypeLabel(block.type)}]</strong>
-                          <div>{block.text || '-'}</div>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
+                <article>
+                  <StructuredContentRenderer structuredContent={activeDoc?.structuredContent} fallbackText={fullText} />
+                  {structuredBlocks.length > 0 ? (
+                    <div className="doc-fulltext-box" style={{ marginTop: 12 }}>
+                      <ul>
+                        {structuredBlocks.map((block, index) => (
+                          <li key={`${block.type}-${index}`} style={{ marginBottom: 8 }}>
+                            <strong>[{blockTypeLabel(block.type)}]</strong>
+                            <div>{block.text || (Array.isArray(block.rows) ? `${block.rows.length}행 표` : block.caption || '-')}</div>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : null}
                 </article>
               )}
             </section>
