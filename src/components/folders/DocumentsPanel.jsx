@@ -22,9 +22,16 @@ function pickFullText(doc) {
 
 function blockTypeLabel(type) {
   if (type === 'heading') return '제목'
-  if (type === 'table-placeholder') return '표'
-  if (type === 'image-placeholder') return '그림'
+  if (type === 'table' || type === 'table-placeholder') return '표'
+  if (type === 'image' || type === 'image-placeholder') return '그림'
   return '문단'
+}
+
+function stripHtmlLike(text) {
+  return String(text || '')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
 }
 
 export default function DocumentsPanel({
@@ -198,8 +205,21 @@ export default function DocumentsPanel({
             </div>
 
             <section className="doc-modal-section">
-              <h3>요약</h3>
-              <p>{activeDoc.summaryOneLine || '-'}</p>
+              <h3>문서 요약</h3>
+              <div className="doc-meta-grid">
+                <div className="doc-meta-card">
+                  <span className="doc-meta-label">추출 방식</span>
+                  <strong>{activeDoc.extractMethod || '-'}</strong>
+                </div>
+                <div className="doc-meta-card">
+                  <span className="doc-meta-label">추출 상태</span>
+                  <strong>{activeDoc.extractStatus || '-'}</strong>
+                </div>
+                <div className="doc-meta-card doc-meta-card-wide">
+                  <span className="doc-meta-label">한 줄 요약</span>
+                  <strong>{stripHtmlLike(activeDoc.summaryOneLine) || '-'}</strong>
+                </div>
+              </div>
               <div className="actions" style={{ marginTop: 8 }}>
                 <button className="btn secondary btn-sm" type="button" onClick={() => navigate('/archive/generate', { state: { documentIds: [activeDoc.id] } })}>이 문서만 선택해서 생성</button>
               </div>
@@ -207,21 +227,21 @@ export default function DocumentsPanel({
 
             <section className="doc-modal-section">
               <div className="title-row">
-                <h3>문서 전체내용</h3>
+                <h3>추출 원문</h3>
                 <button className="btn secondary btn-sm" type="button" onClick={() => setFullOpen((v) => !v)}>
                   {fullOpen ? '접기' : '전체보기'}
                 </button>
               </div>
               {fullOpen && (
                 <article className="doc-fulltext-box">
-                  <pre>{fullText || '문서 전체내용이 아직 없습니다.'}</pre>
+                  <pre>{fullText || '추출 원문이 아직 없습니다.'}</pre>
                 </article>
               )}
             </section>
 
             <section className="doc-modal-section">
               <div className="title-row">
-                <h3>구조화 내용</h3>
+                <h3>구조화 미리보기</h3>
                 <button className="btn secondary btn-sm" type="button" onClick={() => setStructureOpen((v) => !v)}>
                   {structureOpen ? '접기' : `전체보기 (${structuredBlocks.length})`}
                 </button>
