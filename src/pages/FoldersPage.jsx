@@ -72,6 +72,7 @@ export default function FoldersPage() {
 
   const [uploadForm, setUploadForm] = useState({ title: '', file: null })
   const [uploadPanelOpen, setUploadPanelOpen] = useState(false)
+  const [uploadState, setUploadState] = useState({ phase: 'idle', message: '' })
 
   const [activeDoc, setActiveDoc] = useState(null)
   const [linkedGeneratedDocs, setLinkedGeneratedDocs] = useState([])
@@ -207,13 +208,16 @@ export default function FoldersPage() {
     if (!selectedFolderId) return
     if (!uploadForm.file) return showNotice('업로드 파일을 선택해 주세요.')
     try {
+      setUploadState({ phase: 'uploading', message: '파일을 업로드하고 있습니다...' })
       await apiClient.uploadDocument(selectedFolderId, uploadForm.title, uploadForm.file)
+      setUploadState({ phase: 'processing', message: '문서를 정리하고 목록을 갱신하고 있습니다...' })
       setUploadForm({ title: '', file: null })
-      setUploadPanelOpen(false)
       await refreshDocs(selectedFolderId)
+      setUploadState({ phase: 'done', message: '문서 업로드가 완료되었습니다. 바로 상세 검토나 초안 생성으로 이어갈 수 있습니다.' })
       showNotice('문서가 업로드되었습니다.')
     } catch (e) {
       const msg = normalizeError(e)
+      setUploadState({ phase: 'error', message: msg })
       setError(msg)
       showNotice(msg, 'error')
     }
@@ -356,11 +360,19 @@ export default function FoldersPage() {
 
       <UploadModal
         open={uploadPanelOpen}
-        onClose={() => setUploadPanelOpen(false)}
+        onClose={() => {
+          setUploadPanelOpen(false)
+          setUploadState({ phase: 'idle', message: '' })
+        }}
         uploadForm={uploadForm}
         setUploadForm={setUploadForm}
         onUpload={onUpload}
         folderName={folderInfo?.name}
+        uploadState={uploadState}
+        onOpenLatest={() => {
+          setUploadPanelOpen(false)
+          setUploadState({ phase: 'idle', message: '' })
+        }}
       />
     </section>
   )

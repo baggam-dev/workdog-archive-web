@@ -169,6 +169,18 @@ tr:focus { outline:2px solid var(--brand-500); outline-offset:-2px; background:v
 .doc-review-grid { display:grid; grid-template-columns:1.15fr .85fr; gap:14px; align-items:start; }
 .doc-fulltext-box { border:1px solid var(--line-soft); border-radius:10px; background:#f8fafc; max-height:360px; overflow:auto; padding:10px; }
 .doc-collapsed-hint { border:1px dashed var(--line-strong); border-radius:12px; background:#f8fafc; color:#64748b; padding:16px; font-size:13px; }
+.upload-modal { width:min(640px, 100%); display:grid; gap:14px; }
+.upload-dropzone { border:1px dashed var(--brand-300, #93c5fd); border-radius:16px; background:linear-gradient(180deg, #f8fbff 0%, #eef6ff 100%); padding:24px; display:grid; gap:8px; text-align:center; }
+.upload-dropzone strong { font-size:16px; color:var(--text-strong); }
+.upload-dropzone span { color:var(--text-secondary); font-size:13px; }
+.upload-dropzone input[type="file"] { width:100%; }
+.upload-file-chip { display:inline-flex; justify-self:center; align-items:center; padding:6px 12px; border-radius:999px; background:#dbeafe; color:#1d4ed8; font-size:12px; font-weight:700; }
+.upload-status-card { border:1px solid var(--line-soft); border-radius:14px; padding:14px; display:grid; gap:6px; }
+.upload-status-card strong { font-size:14px; }
+.upload-status-card p { margin:0; font-size:13px; color:var(--text-secondary); }
+.upload-status-card.uploading, .upload-status-card.processing { background:#eff6ff; border-color:#bfdbfe; }
+.upload-status-card.done { background:#ecfdf5; border-color:#bbf7d0; }
+.upload-status-card.error { background:#fef2f2; border-color:#fecaca; }
 .doc-fulltext-box pre { margin:0; white-space:pre-wrap; word-break:break-word; font-size:13px; line-height:1.5; color:#334155; }
 .structured-renderer { display:flex; flex-direction:column; gap:12px; }
 .structured-heading { margin:0; font-size:18px; line-height:1.4; color:#0f172a; }
