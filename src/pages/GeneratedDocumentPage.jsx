@@ -77,6 +77,11 @@ export default function GeneratedDocumentPage() {
 
   const parentDoc = allDocs.find((item) => item.id === doc?.regeneratedFromId)
   const childDocs = allDocs.filter((item) => item.regeneratedFromId === doc?.id)
+  const generationMethodLabel = doc?.generationMethod?.startsWith('llm')
+    ? 'LLM 생성'
+    : doc?.generationMethod?.startsWith('rule-fallback')
+      ? '규칙 생성 (LLM 대기)'
+      : '규칙 생성'
 
   const onSave = async () => {
     if (!doc?.id || saving || regenerating) return
@@ -143,30 +148,60 @@ export default function GeneratedDocumentPage() {
 
       {!loading && !error && doc && (
         <>
-          <article className="panel">
-            <h2>기본 정보</h2>
-            <div className="form-card" style={{ marginBottom: 0 }}>
-              <input value={editTitle} onChange={(e) => setEditTitle(e.target.value)} placeholder="제목" disabled={saving || regenerating} />
-              <textarea rows={3} value={editPrompt} onChange={(e) => setEditPrompt(e.target.value)} placeholder="프롬프트" disabled={saving || regenerating} />
-              <div className="summary-grid compact">
-                <div className="stat-card">
-                  <small>참고 문서 수</small>
-                  <strong>{Array.isArray(doc.sourceDocumentIds) ? doc.sourceDocumentIds.length : 0}</strong>
-                </div>
-                <div className="stat-card">
-                  <small>생성일</small>
-                  <strong style={{ whiteSpace: 'normal' }}>{formatKST(doc.createdAt)}</strong>
-                </div>
-                <div className="stat-card">
-                  <small>마지막 수정</small>
-                  <strong style={{ whiteSpace: 'normal' }}>{formatKST(doc.updatedAt || doc.createdAt)}</strong>
-                  {saveSuccess ? <div className="muted" style={{ color: '#16a34a', marginTop: 4 }}>저장 완료</div> : null}
-                </div>
-                <div className="stat-card">
-                  <small>재생성 원본</small>
-                  <strong style={{ whiteSpace: 'normal' }}>{doc.regeneratedFromId || '-'}</strong>
-                </div>
+          <article className="panel generated-hero-panel">
+            <div className="generated-hero-head">
+              <div className="generated-hero-copy">
+                <span className="generated-eyebrow">Generated draft</span>
+                <h2>{editTitle || doc.title}</h2>
+                <p className="muted">참고 문서를 바탕으로 만든 초안을 검토하고 바로 수정, 저장, 재생성할 수 있습니다.</p>
               </div>
+              <div className="actions">
+                <button className="btn secondary" type="button" onClick={onRegenerate} disabled={saving || regenerating}>{regenerating ? '재생성 중...' : '이 프롬프트로 다시 생성'}</button>
+                <button className="btn primary" type="button" onClick={onSave} disabled={saving || regenerating}>{saving ? '저장 중...' : (saveSuccess ? '저장 완료' : '수정 저장')}</button>
+              </div>
+            </div>
+
+            <div className="generated-hero-stats">
+              <div className="generated-stat-card">
+                <small>참고 문서 수</small>
+                <strong>{Array.isArray(doc.sourceDocumentIds) ? doc.sourceDocumentIds.length : 0}</strong>
+              </div>
+              <div className="generated-stat-card">
+                <small>생성 방식</small>
+                <strong>{generationMethodLabel}</strong>
+              </div>
+              <div className="generated-stat-card">
+                <small>생성일</small>
+                <strong>{formatKST(doc.createdAt)}</strong>
+              </div>
+              <div className="generated-stat-card">
+                <small>마지막 수정</small>
+                <strong>{formatKST(doc.updatedAt || doc.createdAt)}</strong>
+              </div>
+            </div>
+
+            <div className="generated-editor-grid">
+              <section className="generated-preview-panel">
+                <div className="title-row">
+                  <h3>문서 프리뷰</h3>
+                  <span className="generated-mode-badge">읽기 모드</span>
+                </div>
+                <div className="generated-preview-body">
+                  <StructuredContentRenderer structuredContent={doc.structuredContent} fallbackText={doc.contentText} />
+                </div>
+              </section>
+
+              <section className="generated-edit-panel">
+                <div className="title-row">
+                  <h3>편집 패널</h3>
+                  <span className="generated-mode-badge edit">편집 모드</span>
+                </div>
+                <div className="form-card generated-edit-form" style={{ marginBottom: 0 }}>
+                  <input value={editTitle} onChange={(e) => setEditTitle(e.target.value)} placeholder="제목" disabled={saving || regenerating} />
+                  <textarea rows={3} value={editPrompt} onChange={(e) => setEditPrompt(e.target.value)} placeholder="프롬프트" disabled={saving || regenerating} />
+                  <textarea rows={18} value={editContentText} onChange={(e) => setEditContentText(e.target.value)} placeholder="본문 내용" disabled={saving || regenerating} />
+                </div>
+              </section>
             </div>
           </article>
 
@@ -202,46 +237,23 @@ export default function GeneratedDocumentPage() {
 
           <article className="panel" style={{ marginTop: 20 }}>
             <h2>참고 문서</h2>
+            <p className="muted">초안의 근거가 되는 문서를 확인하고 원본 흐름으로 돌아갈 수 있습니다.</p>
             {Array.isArray(doc.sourceDocumentsPreview) && doc.sourceDocumentsPreview.length > 0 ? (
-              <ul>
+              <div className="generated-source-list">
                 {doc.sourceDocumentsPreview.map((source) => (
-                  <li key={source.id}>
-                    <div className="title-row">
-                      <div>
-                        <strong>{source.title || source.id}</strong>
-                        <span className="muted"> ({source.category || '기타'})</span>
-                        <div><code>{source.id}</code></div>
-                      </div>
-                      <button className="btn secondary btn-sm" type="button" onClick={() => navigate('/archive/documents')}>원본 문서 보기</button>
+                  <div className="generated-source-card" key={source.id}>
+                    <div>
+                      <strong>{source.title || source.id}</strong>
+                      <div className="muted">{source.category || '기타'}</div>
+                      <code>{source.id}</code>
                     </div>
-                  </li>
+                    <button className="btn secondary btn-sm" type="button" onClick={() => navigate('/archive/documents')}>원본 문서 보기</button>
+                  </div>
                 ))}
-              </ul>
-            ) : Array.isArray(doc.sourceDocumentIds) && doc.sourceDocumentIds.length > 0 ? (
-              <ul>
-                {doc.sourceDocumentIds.map((sourceId) => (
-                  <li key={sourceId}><code>{sourceId}</code></li>
-                ))}
-              </ul>
+              </div>
             ) : (
               <p className="muted">참고 문서 정보가 없습니다.</p>
             )}
-          </article>
-
-          <article className="panel" style={{ marginTop: 20 }}>
-            <h2>구조화 미리보기</h2>
-            <StructuredContentRenderer structuredContent={doc.structuredContent} fallbackText={doc.contentText} />
-          </article>
-
-          <article className="panel" style={{ marginTop: 20 }}>
-            <h2>본문 편집</h2>
-            <div className="form-card" style={{ marginBottom: 0 }}>
-              <textarea rows={18} value={editContentText} onChange={(e) => setEditContentText(e.target.value)} placeholder="본문 내용" disabled={saving || regenerating} />
-              <div className="actions right-actions">
-                <button className="btn secondary" type="button" onClick={onRegenerate} disabled={saving || regenerating}>{regenerating ? '재생성 중...' : '이 프롬프트로 다시 생성'}</button>
-                <button className="btn primary" type="button" onClick={onSave} disabled={saving || regenerating}>{saving ? '저장 중...' : (saveSuccess ? '저장 완료' : '수정 저장')}</button>
-              </div>
-            </div>
           </article>
         </>
       )}

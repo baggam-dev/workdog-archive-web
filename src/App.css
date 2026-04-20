@@ -345,6 +345,25 @@ input[type="checkbox"]:checked::after {
 .taskdog-badge.done { background:#ecfdf5; color:#15803d; }
 .taskdog-badge.error { background:#fef2f2; color:#b91c1c; }
 
+.generated-hero-panel { display:grid; gap:18px; background:linear-gradient(180deg, #ffffff 0%, #f8fbff 100%); }
+.generated-hero-head { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; }
+.generated-hero-copy { display:grid; gap:6px; }
+.generated-hero-copy h2 { font-size:28px; letter-spacing:-0.02em; }
+.generated-eyebrow { display:inline-flex; align-items:center; width:max-content; padding:4px 10px; border-radius:999px; background:#e0f2fe; color:#0369a1; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; }
+.generated-hero-stats { display:grid; grid-template-columns:repeat(4, minmax(0, 1fr)); gap:12px; }
+.generated-stat-card { border:1px solid var(--line-soft); border-radius:14px; background:#fff; padding:14px; display:grid; gap:6px; }
+.generated-stat-card small { color:var(--text-secondary); }
+.generated-stat-card strong { font-size:16px; color:var(--text-strong); }
+.generated-editor-grid { display:grid; grid-template-columns:1.35fr .95fr; gap:16px; align-items:start; }
+.generated-preview-panel, .generated-edit-panel { border:1px solid var(--line-soft); border-radius:16px; background:#fff; padding:16px; display:grid; gap:12px; }
+.generated-preview-body { border:1px solid var(--line-soft); border-radius:14px; background:#fcfdff; padding:18px; min-height:420px; }
+.generated-mode-badge { display:inline-flex; align-items:center; justify-content:center; padding:4px 10px; border-radius:999px; background:#ecfdf5; color:#15803d; font-size:12px; font-weight:700; }
+.generated-mode-badge.edit { background:#eff6ff; color:#1d4ed8; }
+.generated-edit-form { background:#fff; border:none; padding:0; }
+.generated-source-list { display:grid; gap:12px; }
+.generated-source-card { display:flex; justify-content:space-between; align-items:center; gap:12px; border:1px solid var(--line-soft); border-radius:14px; background:#fff; padding:14px; }
+.generated-source-card code { display:block; margin-top:6px; color:var(--text-secondary); }
+
 @media (max-width: 768px) {
   .taskdog-summary-row { grid-template-columns:1fr; }
   .taskdog-mock-grid { grid-template-columns:1fr; }
