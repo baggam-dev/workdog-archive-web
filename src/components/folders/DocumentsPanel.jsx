@@ -34,6 +34,13 @@ function stripHtmlLike(text) {
     .trim()
 }
 
+function extractStatusLabel(status) {
+  if (status === 'success') return '정상 추출'
+  if (status === 'failed') return '추출 실패'
+  if (status === 'pending') return '처리 중'
+  return '미확인'
+}
+
 export default function DocumentsPanel({
   state,
   folders,
@@ -106,13 +113,30 @@ export default function DocumentsPanel({
         </div>
       </div>
 
-      <FilterBar
-        filter={filter}
-        setFilter={setFilter}
-        categories={categories}
-        fileTypes={fileTypes}
-        defaultFilter={defaultFilter}
-      />
+      <div className="document-toolbar-shell">
+        <FilterBar
+          filter={filter}
+          setFilter={setFilter}
+          categories={categories}
+          fileTypes={fileTypes}
+          defaultFilter={defaultFilter}
+        />
+
+        <div className="document-toolbar-meta">
+          <div className="document-toolbar-copy">
+            <strong>문서 탐색</strong>
+            <span>검색, 필터, 상태 확인, 초안 생성까지 한 번에 처리합니다.</span>
+          </div>
+          <div className="actions document-toolbar-actions">
+            <button className="btn primary" type="button" onClick={onGenerateSelected} disabled={checkedDocIds.length === 0}>선택 문서로 초안 만들기</button>
+            {checkedDocIds.length > 0 ? (
+              <button className="btn danger" type="button" onClick={onBulkDelete}>선택 삭제 ({checkedDocIds.length})</button>
+            ) : (
+              <span className="kbd-help">선택된 문서 없음</span>
+            )}
+          </div>
+        </div>
+      </div>
 
       <div className="summary-grid compact">
         <SummaryStat label="표시 문서" value={filteredDocs.length} icon="docs" />
@@ -120,13 +144,7 @@ export default function DocumentsPanel({
         <SummaryStat label="선택 문서" value={checkedDocIds.length} icon="selected" />
       </div>
 
-      <div className="actions" style={{ marginBottom: 8 }}>
-        <button className="btn primary" type="button" onClick={onGenerateSelected} disabled={checkedDocIds.length === 0}>선택 문서로 초안 만들기</button>
-        {checkedDocIds.length > 0 ? (
-          <button className="btn danger" type="button" onClick={onBulkDelete}>선택 삭제 ({checkedDocIds.length})</button>
-        ) : (
-          <span className="kbd-help">선택된 문서 없음</span>
-        )}
+      <div className="actions document-table-caption" style={{ marginBottom: 8 }}>
         <span className="kbd-help">키보드: ↑/↓, Home/End, Enter(상세), Space(중요)</span>
       </div>
 
@@ -178,11 +196,20 @@ export default function DocumentsPanel({
               else setCheckedDocIds((v) => v.filter((id) => id !== d.id))
             }} /></td>
             <td><button className={`star-btn ${d.isImportant ? 'on' : ''}`} onClick={() => onToggleImportant(d)}>{d.isImportant ? '★' : '☆'}</button></td>
-            <td className="ellipsis" title={d.fileName || d.title}>{d.title}</td>
-            <td className="ellipsis" title={String(d.fileType || '').toUpperCase()}>{String(d.fileType || '').toUpperCase()}</td>
-            <td className="ellipsis" title={d.category || '기타'}>{d.category || '기타'}</td>
-            <td title={`관련 초안 ${d.generatedCount || 0}개`}>{d.generatedCount || 0}개</td>
-            <td title={formatKST(d.uploadedAt)}>{formatKSTDateOnly(d.uploadedAt)}</td>
+            <td className="doc-title-cell">
+              <div className="doc-title-main" title={d.fileName || d.title}>{d.title}</div>
+              <div className="doc-title-sub">
+                <span className={`doc-status-badge ${d.extractStatus || 'unknown'}`}>{extractStatusLabel(d.extractStatus)}</span>
+                {d.summaryOneLine ? <span className="doc-summary-snippet" title={stripHtmlLike(d.summaryOneLine)}>{stripHtmlLike(d.summaryOneLine)}</span> : null}
+              </div>
+            </td>
+            <td className="ellipsis" title={String(d.fileType || '').toUpperCase()}><span className="doc-chip">{String(d.fileType || '').toUpperCase()}</span></td>
+            <td className="ellipsis" title={d.category || '기타'}><span className="doc-chip subtle">{d.category || '기타'}</span></td>
+            <td title={`관련 초안 ${d.generatedCount || 0}개`}><span className="doc-generated-count">{d.generatedCount || 0}개</span></td>
+            <td title={formatKST(d.uploadedAt)}>
+              <div className="doc-date-main">{formatKSTDateOnly(d.uploadedAt)}</div>
+              <div className="doc-date-sub">업로드</div>
+            </td>
             <td className="action-cell">
               <ActionMenu onDetail={() => onOpenDetail(d)} onViewGenerated={() => onViewGenerated(d)} onDelete={() => onDeleteOne(d.id)} />
             </td>

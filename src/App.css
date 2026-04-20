@@ -71,7 +71,14 @@ h2 { margin:0; font-size:var(--fs-20); line-height:var(--lh-tight); }
 .filter-checkbox { display:flex; align-items:center; gap:8px; padding:8px 12px; border-radius:var(--radius-md); font-size:var(--fs-14); font-weight:500; color:var(--text-secondary); cursor:pointer; transition:all .15s ease; user-select:none; }
 .filter-checkbox:hover { background:var(--bg-subtle); }
 
-.table-wrap { border:1px solid var(--line-soft); border-radius:var(--radius-lg); overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,.05); }
+.document-toolbar-shell { display:grid; gap:12px; margin-bottom:14px; }
+.document-toolbar-meta { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 16px; border:1px solid var(--line-soft); border-radius:14px; background:linear-gradient(180deg, #ffffff 0%, #f8fafc 100%); }
+.document-toolbar-copy { display:grid; gap:4px; }
+.document-toolbar-copy strong { font-size:15px; color:var(--text-strong); }
+.document-toolbar-copy span { font-size:13px; color:var(--text-secondary); }
+.document-toolbar-actions { justify-content:flex-end; }
+.document-table-caption { justify-content:flex-end; }
+.table-wrap { border:1px solid var(--line-soft); border-radius:var(--radius-lg); overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,.05); background:#fff; }
 table { width:100%; border-collapse:collapse; min-width:840px; table-layout:fixed; }
 thead { background:#fafafa; border-bottom:2px solid var(--line-default); }
 th, td { border-bottom:1px solid var(--line-soft); padding:14px 16px; text-align:left; font-size:var(--fs-14); vertical-align:middle; }
@@ -80,7 +87,7 @@ thead th { position:sticky; top:0; background:#fafafa; z-index:1; font-size:var(
 
 .col-check { width:42px; }
 .col-important { width:64px; }
-.col-title { width:38%; }
+.col-title { width:42%; }
 .col-type { width:90px; }
 .col-category { width:130px; }
 .col-date { width:130px; }
@@ -89,6 +96,20 @@ thead th { position:sticky; top:0; background:#fafafa; z-index:1; font-size:var(
 .action-cell { text-align:center; }
 
 .ellipsis { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.doc-title-cell { display:grid; gap:8px; }
+.doc-title-main { font-size:14px; font-weight:600; color:var(--text-strong); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.doc-title-sub { display:flex; align-items:center; gap:8px; min-width:0; }
+.doc-summary-snippet { min-width:0; flex:1; font-size:12px; color:var(--text-secondary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.doc-status-badge { display:inline-flex; align-items:center; justify-content:center; border-radius:999px; padding:4px 8px; font-size:11px; font-weight:700; white-space:nowrap; }
+.doc-status-badge.success { background:#ecfdf5; color:#059669; }
+.doc-status-badge.failed { background:#fef2f2; color:#dc2626; }
+.doc-status-badge.pending { background:#eff6ff; color:#2563eb; }
+.doc-status-badge.unknown { background:#f1f5f9; color:#64748b; }
+.doc-chip { display:inline-flex; align-items:center; justify-content:center; padding:4px 8px; border-radius:999px; background:#e2e8f0; color:#334155; font-size:11px; font-weight:700; }
+.doc-chip.subtle { background:#f1f5f9; color:#475569; }
+.doc-generated-count { font-weight:700; color:var(--brand-500); }
+.doc-date-main { font-weight:600; color:var(--text-primary); }
+.doc-date-sub { font-size:11px; color:var(--text-secondary); margin-top:2px; }
 .table-actions { justify-content:flex-end; flex-wrap:nowrap; }
 .action-menu { position:relative; display:flex; justify-content:center; align-items:center; }
 .icon-btn { width:32px; height:32px; border:1px solid var(--line-default); border-radius:var(--radius-sm); background:var(--bg-surface); cursor:pointer; display:inline-flex; align-items:center; justify-content:center; color:var(--text-secondary); }
@@ -102,7 +123,7 @@ thead th { position:sticky; top:0; background:#fafafa; z-index:1; font-size:var(
 .star-btn:hover { background:var(--bg-subtle); color:var(--warn-500); }
 .star-btn.on { color:var(--warn-500); }
 tbody tr { transition:background .15s ease; }
-tbody tr:hover { background:#fafafa; }
+tbody tr:hover { background:#f8fbff; }
 tr.row-active { background:var(--brand-100); }
 tr.row-active td:first-child { box-shadow: inset 3px 0 0 var(--brand-500); }
 tr:focus { outline:2px solid var(--brand-500); outline-offset:-2px; background:var(--brand-100); }
