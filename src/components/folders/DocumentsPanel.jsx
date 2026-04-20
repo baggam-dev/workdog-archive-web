@@ -220,19 +220,19 @@ export default function DocumentsPanel({
       {activeDoc && (
         <div className="modal-backdrop" onClick={() => setActiveDoc(null)}>
           <div className="modal doc-detail-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="doc-modal-head">
-              <div>
-                <h2>원본 문서 상세 · {activeDoc.title}</h2>
-                <p className="meta">형식: {activeDoc.fileType} · 수정일: {formatKST(activeDoc.uploadedAt)}</p>
+            <div className="doc-modal-hero">
+              <div className="doc-modal-head">
+                <div>
+                  <span className="generated-eyebrow">Source document</span>
+                  <h2>원본 문서 상세 · {activeDoc.title}</h2>
+                  <p className="meta">형식: {activeDoc.fileType} · 수정일: {formatKST(activeDoc.uploadedAt)}</p>
+                </div>
+                <div className="actions">
+                  <button className="btn primary" type="button" onClick={() => navigate('/archive/generate', { state: { documentIds: [activeDoc.id] } })}>이 문서로 바로 초안 만들기</button>
+                  <button className="btn" type="button" onClick={() => setActiveDoc(null)}>닫기</button>
+                </div>
               </div>
-              <div className="actions">
-                <button className="btn primary" type="button" onClick={() => navigate('/archive/generate', { state: { documentIds: [activeDoc.id] } })}>이 문서로 바로 초안 만들기</button>
-                <button className="btn" type="button" onClick={() => setActiveDoc(null)}>닫기</button>
-              </div>
-            </div>
 
-            <section className="doc-modal-section">
-              <h3>문서 요약</h3>
               <div className="doc-meta-grid">
                 <div className="doc-meta-card">
                   <span className="doc-meta-label">추출 방식</span>
@@ -242,55 +242,58 @@ export default function DocumentsPanel({
                   <span className="doc-meta-label">추출 상태</span>
                   <strong>{activeDoc.extractStatus || '-'}</strong>
                 </div>
+                <div className="doc-meta-card">
+                  <span className="doc-meta-label">카테고리</span>
+                  <strong>{activeDoc.category || '기타'}</strong>
+                </div>
                 <div className="doc-meta-card doc-meta-card-wide">
                   <span className="doc-meta-label">한 줄 요약</span>
                   <strong>{stripHtmlLike(activeDoc.summaryOneLine) || '-'}</strong>
                 </div>
               </div>
-              <div className="actions" style={{ marginTop: 8 }}>
-                <button className="btn secondary btn-sm" type="button" onClick={() => navigate('/archive/generate', { state: { documentIds: [activeDoc.id] } })}>이 문서만 선택해서 생성</button>
-              </div>
-            </section>
+            </div>
 
-            <section className="doc-modal-section">
-              <div className="title-row">
-                <h3>추출 원문</h3>
-                <button className="btn secondary btn-sm" type="button" onClick={() => setFullOpen((v) => !v)}>
-                  {fullOpen ? '접기' : '전체보기'}
-                </button>
-              </div>
-              {fullOpen && (
-                <article className="doc-fulltext-box">
-                  <pre>{fullText || '추출 원문이 아직 없습니다.'}</pre>
-                </article>
-              )}
-            </section>
+            <div className="doc-review-grid">
+              <section className="doc-modal-section">
+                <div className="title-row">
+                  <h3>구조화 미리보기</h3>
+                  <button className="btn secondary btn-sm" type="button" onClick={() => setStructureOpen((v) => !v)}>
+                    {structureOpen ? '접기' : `전체보기 (${structuredBlocks.length})`}
+                  </button>
+                </div>
+                <p className="muted">제목, 문단, 표, 이미지 등 추출된 구조를 먼저 검토합니다.</p>
+                <StructuredContentRenderer structuredContent={activeDoc?.structuredContent} fallbackText={fullText} />
+                {structureOpen && structuredBlocks.length > 0 ? (
+                  <div className="doc-fulltext-box" style={{ marginTop: 12 }}>
+                    <ul>
+                      {structuredBlocks.map((block, index) => (
+                        <li key={`${block.type}-${index}`} style={{ marginBottom: 8 }}>
+                          <strong>[{blockTypeLabel(block.type)}]</strong>
+                          <div>{block.text || (Array.isArray(block.rows) ? `${block.rows.length}행 표` : block.caption || '-')}</div>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : null}
+              </section>
 
-            <section className="doc-modal-section">
-              <div className="title-row">
-                <h3>구조화 미리보기</h3>
-                <button className="btn secondary btn-sm" type="button" onClick={() => setStructureOpen((v) => !v)}>
-                  {structureOpen ? '접기' : `전체보기 (${structuredBlocks.length})`}
-                </button>
-              </div>
-              {structureOpen && (
-                <article>
-                  <StructuredContentRenderer structuredContent={activeDoc?.structuredContent} fallbackText={fullText} />
-                  {structuredBlocks.length > 0 ? (
-                    <div className="doc-fulltext-box" style={{ marginTop: 12 }}>
-                      <ul>
-                        {structuredBlocks.map((block, index) => (
-                          <li key={`${block.type}-${index}`} style={{ marginBottom: 8 }}>
-                            <strong>[{blockTypeLabel(block.type)}]</strong>
-                            <div>{block.text || (Array.isArray(block.rows) ? `${block.rows.length}행 표` : block.caption || '-')}</div>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  ) : null}
-                </article>
-              )}
-            </section>
+              <section className="doc-modal-section">
+                <div className="title-row">
+                  <h3>추출 원문</h3>
+                  <button className="btn secondary btn-sm" type="button" onClick={() => setFullOpen((v) => !v)}>
+                    {fullOpen ? '접기' : '전체보기'}
+                  </button>
+                </div>
+                <p className="muted">원문 텍스트를 펼쳐 보면서 누락이나 깨짐 여부를 확인합니다.</p>
+                {fullOpen ? (
+                  <article className="doc-fulltext-box">
+                    <pre>{fullText || '추출 원문이 아직 없습니다.'}</pre>
+                  </article>
+                ) : (
+                  <div className="doc-collapsed-hint">원문은 필요할 때만 펼쳐서 보는 방식으로 정리했습니다.</div>
+                )}
+              </section>
+            </div>
 
             <section className="doc-modal-section">
               <h3>연결된 생성문서</h3>
